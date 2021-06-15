@@ -1,0 +1,6 @@
+<form action="{% url 'create_address' %}" method="post">
+    {% csrf_token %}
+    <label for="address">Address:</label>
+    <input type="text" name="address" id="address" size=50>
+    <input type="submit">
+</form>
