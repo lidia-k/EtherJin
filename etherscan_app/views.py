@@ -27,5 +27,8 @@ def show_results(request):
         return HttpResponse(f'message: {response_data["message"]}, result: {result_data}')
     elif result_data == 'Invalid API Key':
         print("Please provide a valid api_token.")
-    print(f'message: {response_data["message"]}, result: {result_data}')
+    elif result_data == 'Error! Invalid address format':
+        return HttpResponse(f"{result_data}", status=400)
+    
+    print(f'status:{response_data["status"]}, message: {response_data["message"]}, result: {result_data}')
     return HttpResponse(status=500)
