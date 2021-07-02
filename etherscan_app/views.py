@@ -13,12 +13,19 @@ def search(request):
 def show_results(request):
     address = request.POST.get("address")
     valid_address, response_data = validate_address(address)
-    result_data = response_data['result']
     
+    if not valid_address and not response_data:
+        # no api token
+        print("Please provide api_token.")
+        return HttpResponse(status=500)
+
+    result_data = response_data['result']
+
     if valid_address:
         address_instance = create_address(address) 
         async_task('etherscan_app.utils.create_transaction', address_instance, result_data)
         return HttpResponse(f'message: {response_data["message"]}, result: {result_data}')
     elif result_data == 'Invalid API Key':
         print("Please provide a valid api_token.")
-        return HttpResponse(status=500)
+    print(f'message: {response_data["message"]}, result: {result_data}')
+    return HttpResponse(status=500)

@@ -15,7 +15,7 @@ def validate_address(address):
     """
     api_token = os.environ.get("API_TOKEN")
     if not api_token:
-        sys.exit("Please provide api_token.") 
+        return None, None
 
     etherscan_api = f'https://api.etherscan.io/api?module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=asc&apikey={api_token}'
     response = requests.get(etherscan_api)
