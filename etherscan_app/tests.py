@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from etherscan_app.utils import validate_address, create_address
+from etherscan_app.utils import validate_address, create_address, create_transaction
 from etherscan_app.models import Address
 from etherscan_app.views import show_results
 from django.db.utils import IntegrityError 
@@ -40,3 +40,18 @@ class CreateAddressTests(TestCase):
     def test_create_address_with_already_existing_address(self):
         address_instance = create_address(self.address)
         self.assertEqual(address_instance, None)
+
+class CreateTransactionTests(TestCase):
+    def setUp(self):
+        address = "0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF"
+        self.address_instance = create_address(address)
+        valid_address, response_data = validate_address(address)
+        self.result_data = response_data['result']
+    
+    def test_create_transaction_with_new_address(self):
+        create_transaction(self.address_instance, self.result_data)
+        transactions = Address.objects.last().transactions.all()
+        self.assertTrue(transactions)
+
+class UpdateTransactionTests(TestCase):
+    pass
