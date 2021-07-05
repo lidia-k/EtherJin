@@ -3,7 +3,6 @@ import requests
 import json
 from ratelimiter import RateLimiter
 from etherscan_app.models import Address, Transaction
-import sys
 
 @RateLimiter(max_calls=5, period=1)
 def validate_address(address):
@@ -28,8 +27,7 @@ def create_address(address):
     """
     Creates an address instance for a valid address 
     """
-    address_instance = Address.objects.create(address=address)
-    return address_instance
+    Address.objects.create(address=address)
 
 def create_transaction(address_instance, result_data):
     """
@@ -38,6 +36,9 @@ def create_transaction(address_instance, result_data):
     transactions = []
     for i in range(len(result_data)):
         transaction = result_data[i]
-        transaction_instance = Transaction(address=address_instance, from_account=transaction['from'], to_account=transaction['to'], value_in_ether=int(transaction['value'])/1e18)
-        transactions.append(transaction_instance)
+        hash = transaction['hash']
+        if not address_instance.transactions.filter(hash=hash):
+            transaction_instance = Transaction(address=address_instance, hash=hash, from_account=transaction['from'], to_account=transaction['to'], value_in_ether=int(transaction['value'])/1e18)
+            transactions.append(transaction_instance)
     Transaction.objects.bulk_create(transactions)
+    
