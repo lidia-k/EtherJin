@@ -22,12 +22,11 @@ def show_results(request):
     result_data = response_data['result']
 
     if valid_address:
-        import pdb; pdb.set_trace()
         if not Address.objects.filter(address=address):
             create_address(address) 
         address_instance = Address.objects.get(address=address)
         async_task('etherscan_app.utils.create_transaction', address_instance, result_data)
-        return HttpResponse(f'message: {response_data["message"]}, result: {result_data}')
+        return HttpResponse(f"The transaction data of '{address}' is successfully saved.", status=200)
     elif result_data == 'Error! Invalid address format':
         return HttpResponse(f"{result_data}", status=400)
     
