@@ -2,11 +2,11 @@ import json
 import os
 
 import requests
-from ratelimiter import RateLimiter
+import ratelimiter 
 
 from etherscan_app.models import Transaction
 
-@RateLimiter(max_calls=5, period=1)
+@ratelimiter.RateLimiter(max_calls=5, period=1)
 def validate_address(address):
     """
     Takes in an address
@@ -20,7 +20,7 @@ def validate_address(address):
 
     etherscan_api = f'https://api.etherscan.io/api?module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=asc&apikey={api_token}'
     response = requests.get(etherscan_api)
-    response_data = json.loads(response.text)
+    response_data = response.json()
     valid_address = response_data["status"] == "1" and response_data["message"] == "OK"
     
     return valid_address, response_data
