@@ -7,12 +7,12 @@ from django.urls import reverse
 from etherscan_app.models import Address, Transaction
 from etherscan_app.utils import create_transaction, validate_address
 
-@patch('etherscan_app.utils.requests')
+@patch('etherscan_app.utils.requests.get')
 class ValidateAddressTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('results') 
-        #self.rate_limiter = RateLimiter_patch(max_calls=5, period=1)
+        self.res = Mock(spec=Response)
 
     def test_validate_address_with_valid_address(self, request_patch):
         """
@@ -24,9 +24,8 @@ class ValidateAddressTests(TestCase):
             "message":"OK",
             "result":"result data"
             }
-        res = Mock(spec=Response)
-        res.json.return_value = patched_data
-        request_patch.get.return_value = res
+        self.res.json.return_value = patched_data
+        request_patch.return_value = self.res
  
         address = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
         valid_address, _ = validate_address(address)
@@ -42,7 +41,8 @@ class ValidateAddressTests(TestCase):
             "message":"NOTOK",
             "result":"Error! Invalid address format"
             }
-        request_patch.get.return_value = HttpResponse(patched_data)
+        self.res.json.return_value = patched_data
+        request_patch.return_value = self.res
         
         address = "1234567890aaazzz"
         valid_address, response_data = validate_address(address)
@@ -60,7 +60,8 @@ class ValidateAddressTests(TestCase):
             "message":"NOTOK",
             "result":"Error! Invalid address format"
             }
-        request_patch.get.return_value = HttpResponse(patched_data)
+        self.res.json.return_value = patched_data
+        request_patch.return_value = self.res
     
         address = "1234567890aaazzz"
         response = self.client.post(self.url, {'adress': address})
