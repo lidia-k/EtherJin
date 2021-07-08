@@ -150,14 +150,15 @@ class CreateTransactionTests(TestCase):
                 "value_in_ether": "0.0000000001",
             }
         ]
-        self.request_patch.return_value = HttpResponse({
+        self.res.json.return_value = {
             "status":"1",
             "message":"OK",
             "result": new_data
-        })
+        }
+        self.request_patch.return_value = self.res
         _, response_data = validate_address(self.address_instance.pk)
         result_data = response_data['result']
-        create_transaction(self.address_instance, result_data)
+        create_transaction(self.address_instance.pk, result_data)
        
         self.assertTrue(transaction_count < Transaction.objects.filter(address=self.address_instance).count())
 
