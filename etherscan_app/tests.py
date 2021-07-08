@@ -139,17 +139,17 @@ class CreateTransactionTests(TestCase):
         Transaction.objects.create(**fields)
 
         transaction_count = Transaction.objects.filter(address=self.address_instance).count()
-        new_data = self.transaction_data.append(
-            {
-                "hash": "0xanotherhash",
-                "from_": "0xfromaccount",
-                "to":"0xtoaccount",
-                "value": "0.0000000001",
-            })
+        new_data = {
+            "hash": "0xanotherhash",
+            "from": "0xfromaccount",
+            "to":"0xtoaccount",
+            "value": "0.0000000001",
+        }
+        self.transaction_data.append(new_data)
         self.res.json.return_value = {
             "status":"1",
             "message":"OK",
-            "result": new_data
+            "result": self.transaction_data
         }
         request_patch.return_value = self.res
         _, response_data = validate_address(self.address_instance.pk)
