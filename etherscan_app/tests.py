@@ -73,6 +73,7 @@ class CreateAddressTests(TestCase):
         self.url = reverse('results')
         self.address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
         self.address_instance = Address.objects.create(address=self.address)
+        self.res = Mock(spec = Response)
     
     @patch('etherscan_app.utils.requests.get')
     def test_create_address_with_new_address(self, request_patch):
@@ -85,7 +86,8 @@ class CreateAddressTests(TestCase):
             "message":"OK",
             "result":"result data"
         }
-        request_patch.return_value = HttpResponse(patched_data)
+        self.res.json.return_value = patched_data
+        request_patch.return_value = self.res
 
         new_address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
         self.client.post(self.url, {'address': new_address})
