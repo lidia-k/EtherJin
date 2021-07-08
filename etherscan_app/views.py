@@ -16,7 +16,6 @@ def search(request):
 def show_results(request):
     address = request.POST.get("address")
     valid_address, response_data = validate_address(address)
-
     if not valid_address and not response_data:
         # no api token
         print("Please provide api_token.")
@@ -26,7 +25,8 @@ def show_results(request):
 
     if valid_address:
         address_instance, _ = Address.objects.get_or_create(address=address)
-        async_task('etherscan_app.utils.create_transaction', address_instance, result_data)
+        pk = address_instance.pk
+        async_task('etherscan_app.utils.create_transaction', pk, result_data)
         return HttpResponse(f"The transaction data of '{address}' is successfully saved.", status=200)
     elif result_data == 'Error! Invalid address format':
         return HttpResponse(f"{result_data}", status=400)

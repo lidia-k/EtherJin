@@ -99,6 +99,7 @@ class CreateTransactionTests(TestCase):
         self.request_patch = request_patch
         self.client = Client()
         self.url = reverse('results')
+        self.res = Mock(spec=Response)
         self.address_instance = Address.objects.create(address="0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF")
         self.transaction_data = {
             "address": self.address_instance.pk,
@@ -113,11 +114,12 @@ class CreateTransactionTests(TestCase):
         Takes in a new valid address
         Creates transaction instances of the given address
         """
-        self.request_patch.return_value = HttpResponse({
+        self.res.json.return_value = {
             "status":"1",
             "message":"OK",
             "result": self.transaction_data
-        })
+        }
+        self.request_patch.return_value = self.res
         _, response_data = validate_address(self.address_instance.pk)
         result_data = response_data['result']
         create_transaction(self.address_instance, result_data)
