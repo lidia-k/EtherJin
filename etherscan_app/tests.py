@@ -93,23 +93,21 @@ class CreateAddressTests(TestCase):
         self.client.post(self.url, {'address': new_address})
         self.assertEqual(Address.objects.latest('created_at').address, new_address)
 
+@patch('etherscan_app.utils.requests.get')
 class CreateTransactionTests(TestCase):
-    @patch('etherscan_app.utils.requests.get')
-    def setUp(self, request_patch):
-        self.request_patch = request_patch
+    def setUp(self):
         self.client = Client()
         self.url = reverse('results')
         self.res = Mock(spec=Response)
         self.address_instance = Address.objects.create(address="0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF")
-        self.transaction_data = {
-            "address": self.address_instance.pk,
+        self.transaction_data = [{
             "hash": "0xmyhash",
-            "from_account": "0xfromaccount",
-            "to_account":"0xtoaccount",
-            "value_in_ether": "0.0000000001",
-        }
+            "from": "0xfromaccount",
+            "to":"0xtoaccount",
+            "value": "0.0000000001",
+        }]
         
-    def test_create_transaction_with_new_address(self):
+    def test_create_transaction_with_new_address(self, request_patch):
         """
         Takes in a new valid address
         Creates transaction instances of the given address
@@ -119,14 +117,14 @@ class CreateTransactionTests(TestCase):
             "message":"OK",
             "result": self.transaction_data
         }
-        self.request_patch.return_value = self.res
+        request_patch.return_value = self.res
         _, response_data = validate_address(self.address_instance.pk)
         result_data = response_data['result']
         create_transaction(self.address_instance.pk, result_data)
         transactions = Transaction.objects.filter(address=self.address_instance)
         self.assertTrue(transactions)
 
-    def test_create_transaction_with_existing_address(self):
+    def test_create_transaction_with_existing_address(self, request_patch):
         """
         Takes in an existing address
         Updates the transaction table with the new data 
@@ -141,21 +139,19 @@ class CreateTransactionTests(TestCase):
         Transaction.objects.create(**fields)
 
         transaction_count = Transaction.objects.filter(address=self.address_instance).count()
-        new_data = [self.transaction_data, 
+        new_data = self.transaction_data.append(
             {
-                "address": self.address_instance.pk, 
-                "hash": "0xmyhash",
-                "from_account": "0xfromaccount",
-                "to_account":"0xtoaccount",
-                "value_in_ether": "0.0000000001",
-            }
-        ]
+                "hash": "0xanotherhash",
+                "from_": "0xfromaccount",
+                "to":"0xtoaccount",
+                "value": "0.0000000001",
+            })
         self.res.json.return_value = {
             "status":"1",
             "message":"OK",
             "result": new_data
         }
-        self.request_patch.return_value = self.res
+        request_patch.return_value = self.res
         _, response_data = validate_address(self.address_instance.pk)
         result_data = response_data['result']
         create_transaction(self.address_instance.pk, result_data)
