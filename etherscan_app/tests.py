@@ -91,7 +91,7 @@ class CreateAddressTests(TestCase):
 
         new_address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
         self.client.post(self.url, {'address': new_address})
-        self.assertEqual(Address.objects.last().address, new_address)
+        self.assertEqual(Address.objects.latest('created_at').address, new_address)
 
 class CreateTransactionTests(TestCase):
     @patch('etherscan_app.utils.requests.get')
