@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from etherscan_app import views
 
 app_name = 'etherscan_app'
 
