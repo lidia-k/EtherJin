@@ -31,9 +31,15 @@ def show_results(request):
         address_instance, _ = Address.objects.get_or_create(address=address)
         pk = address_instance.pk
         async_task('etherscan_app.utils.create_transaction', pk, result_data)
-        return HttpResponse(f"The transaction data of '{address}' is successfully saved.", status=200)
+        return render(request, 'etherscan_app/results.html')
     elif result_data == 'Error! Invalid address format':
         return HttpResponse(f"{result_data}", status=400)
     
     print(f'status:{response_data["status"]}, message: {response_data["message"]}, result: {result_data}')
     return HttpResponse(status=400)
+
+@login_required(login_url='/')
+def show_user_addresses(request):
+    user = request.user
+    addresses = user.addresses.all()
+    return render(request, 'etherscan_app/user_addresses.html', {'addresses': addresses})

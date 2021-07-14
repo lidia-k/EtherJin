@@ -1,0 +1,15 @@
+{{ user.get_short_name}}, 
+
+{% if not addresses %}
+    <p>you aren't following any address yet..</p>
+{% else %}
+    <p>the addresses you're following are..</p>
+    <br>
+    {% for x in addresses %}
+        <ul>
+            <li>
+                {{ x.address }}
+            </li>
+        </ul>
+    {% endfor %}
+{% endif %}

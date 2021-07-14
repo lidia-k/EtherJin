@@ -32,6 +32,7 @@ def create_transaction(pk, result_data):
     """
     address_instance = Address.objects.get(pk=pk)
     transactions = []
+    #TODO fix the for loop line: for transaction in result_data
     for i in range(len(result_data)):
         transaction = result_data[i]
         hash = transaction['hash']
@@ -45,4 +46,3 @@ def create_transaction(pk, result_data):
             )
             transactions.append(transaction_instance)
     Transaction.objects.bulk_create(transactions)
-    
