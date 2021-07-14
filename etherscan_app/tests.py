@@ -1,12 +1,14 @@
 from unittest.mock import Mock, patch
 
+from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
 from requests.models import Response
 
 from etherscan_app.models import Address, Transaction
-from etherscan_app.utils import create_transaction, validate_address
+from etherscan_app.utils import create_transaction, validate_address, get_addresses_for_user
+
 
 
 @patch('etherscan_app.utils.requests.get')
@@ -160,3 +162,21 @@ class CreateTransactionTests(TestCase):
        
         self.assertTrue(transaction_count < Transaction.objects.filter(address=self.address_instance).count())
 
+class CreateUserSpecificDataTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('etherscan_app:results')
+
+    def test_get_addresses_for_user(self):
+        user_instance = User.objects.create(username='testuser')
+        addresses = [
+            '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF', 
+            '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca',]
+        
+        for address in addresses:
+            address_instance = Address.objects.create(address=address)
+            address_instance.users.add(user_instance)
+
+        user_addresses = [x.address for x in get_addresses_for_user(user_instance)]
+        expected_addresses = [x.address for x in user_instance.addresses.all()]
+        self.assertEqual(user_addresses, expected_addresses)
