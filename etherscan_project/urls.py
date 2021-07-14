@@ -20,9 +20,8 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('app/', include('etherscan_app.urls')),
+    path('app/', include('etherscan_app.urls', namespace='etherscan_app')),
     path('', include('social_django.urls', namespace='social')),
-    path('', views.login), 
-    path('home/', views.home), 
+    path('', views.home), 
     path('logout/', views.logout, name="logout"),
 ]
