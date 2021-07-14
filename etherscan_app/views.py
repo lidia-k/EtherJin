@@ -31,7 +31,7 @@ def show_results(request):
         address_instance, _ = Address.objects.get_or_create(address=address)
         pk = address_instance.pk
         async_task('etherscan_app.utils.create_transaction', pk, result_data)
-        return render(request, 'etherscan_app/results.html')
+        return render(request, 'etherscan_app/results.html', {'address': pk})
     elif result_data == 'Error! Invalid address format':
         return HttpResponse(f"{result_data}", status=400)
     
