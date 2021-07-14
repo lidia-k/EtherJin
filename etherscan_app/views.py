@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 
@@ -5,7 +6,7 @@ from django_q.tasks import async_task
 
 from etherscan_app.models import Address
 from etherscan_app.utils import validate_address
-from django.contrib.auth.decorators import login_required
+
 
 @login_required(login_url='/')
 def index(request):

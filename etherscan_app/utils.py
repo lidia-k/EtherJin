@@ -1,8 +1,10 @@
-from etherscan_app.models import Address, Transaction
 import os
 
+import ratelimiter
 import requests
-import ratelimiter 
+
+from etherscan_app.models import Address, Transaction
+
 
 @ratelimiter.RateLimiter(max_calls=5, period=1)
 def validate_address(address):

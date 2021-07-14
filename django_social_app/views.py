@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth import logout as auth_logout
+from django.shortcuts import redirect, render
 
 
 def home(request):

@@ -1,11 +1,13 @@
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
-from requests.models import Response
 from django.test import Client, TestCase
 from django.urls import reverse
 
+from requests.models import Response
+
 from etherscan_app.models import Address, Transaction
 from etherscan_app.utils import create_transaction, validate_address
+
 
 @patch('etherscan_app.utils.requests.get')
 class ValidateAddressTests(TestCase):
