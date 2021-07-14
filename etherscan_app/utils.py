@@ -12,7 +12,7 @@ def validate_address(address):
     bool (whether or not the address is valid)
     dict (response json)
     """
-    api_token = os.environ.get("API_TOKEN")
+    api_token = os.environ.get("ETHERSCAN_API_TOKEN")
     if not api_token:
         return None, None
 

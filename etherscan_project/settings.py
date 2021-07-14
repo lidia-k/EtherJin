@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,6 +34,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'etherscan_app',
     'django_q',
+    'django_social_app',
+    'social_django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -64,6 +67,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -125,3 +130,14 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.linkedin.LinkedinOAuth2', 
+    'django.contrib.auth.backends.ModelBackend',)
+
+SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY= os.environ.get('SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY')
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET=os.environ.get('SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET')
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/home/'
+SOCIAL_AUTH_LOGIN_URL = '/'
+ETHERSCAN_API_TOKEN=os.environ.get('ETHERSCAN_API_TOKEN')
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE = ['r_liteprofile', 'r_emailaddress']
