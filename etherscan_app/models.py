@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Address(models.Model):
+    user = models.ForeignKey(User, related_name='address', on_delete=models.CASCADE, null=True)
     address = models.CharField(max_length=50, unique=True, primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
 class Transaction(models.Model):
