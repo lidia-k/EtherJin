@@ -7,7 +7,7 @@ from django.urls import reverse
 from requests.models import Response
 
 from etherscan_app.models import Address, Transaction
-from etherscan_app.utils import create_transaction, validate_address, get_addresses_for_user
+from etherscan_app.utils import create_transaction, validate_address
 
 
 
@@ -165,10 +165,11 @@ class CreateTransactionTests(TestCase):
 class CreateUserSpecificDataTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.url = reverse('etherscan_app:results')
+        self.url = reverse('etherscan_app:user_addresses')
 
-    def test_get_addresses_for_user(self):
+    def test_show_user_addresses_view(self):
         user_instance = User.objects.create(username='testuser')
+        self.client.force_login(user_instance)
         addresses = [
             '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF', 
             '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca',]
@@ -176,7 +177,6 @@ class CreateUserSpecificDataTests(TestCase):
         for address in addresses:
             address_instance = Address.objects.create(address=address)
             address_instance.users.add(user_instance)
-
-        user_addresses = [x.address for x in get_addresses_for_user(user_instance)]
-        expected_addresses = [x.address for x in user_instance.addresses.all()]
-        self.assertEqual(user_addresses, expected_addresses)
+        res = self.client.get(self.url)
+        context_addresses = [x.address for x in res.context.get('addresses')]
+        self.assertEqual(context_addresses, [x.address for x in user_instance.addresses.all()])
