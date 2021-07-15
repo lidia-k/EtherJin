@@ -166,21 +166,30 @@ class CreateTransactionTests(TestCase):
        
         self.assertTrue(transaction_count < Transaction.objects.filter(address=self.address_instance).count())
 
+#TODO create a test for show_results view
+
 class CreateUserSpecificDataTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('etherscan_app:user_addresses')
+        self.user_instance = User.objects.create(username='testuser')
 
-    def test_show_user_addresses_view(self):
-        user_instance = User.objects.create(username='testuser')
-        self.client.force_login(user_instance)
+    def test_show_user_addresses_view_with_addresses(self):
         addresses = [
             '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF', 
             '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca',]
         
         for address in addresses:
             address_instance = Address.objects.create(address=address)
-            address_instance.users.add(user_instance)
+            address_instance.users.add(self.user_instance)
+
+        self.client.force_login(self.user_instance)
+        self.res = self.client.get(self.url)
+        
+        context_addresses = [x.address for x in self.res.context.get('addresses')]
+        self.assertEqual(context_addresses, [x.address for x in self.user_instance.addresses.all()])
+
+    def test_show_user_address_view_without_addresses(self):
+        self.client.force_login(self.user_instance)
         res = self.client.get(self.url)
-        context_addresses = [x.address for x in res.context.get('addresses')]
-        self.assertEqual(context_addresses, [x.address for x in user_instance.addresses.all()])
+        self.assertEqual(res.status_code, 404)
