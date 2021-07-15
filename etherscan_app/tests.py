@@ -166,9 +166,30 @@ class CreateTransactionTests(TestCase):
        
         self.assertTrue(transaction_count < Transaction.objects.filter(address=self.address_instance).count())
 
-#TODO create a test for show_results view
+@patch('etherscan_app.views.validate_address')
+@patch('etherscan_app.views.async_task')
+class ResultsViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('etherscan_app:results')
+        self.user_instance = User.objects.create(username='testuser')
+        self.address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
+        self.response_data = {
+            "status":"1",
+            "message":"OK",
+            "result":"result data"
+        }
 
-class CreateUserSpecificDataTests(TestCase):
+    def test_show_results(self, async_task_patch, validate_address_patch):    
+        validate_address_patch.return_value = True, self.response_data
+        
+        self.client.force_login(self.user_instance)
+        res = self.client.get(self.url, {'address': self.address})
+        context_address = res.context.get('address')
+       
+        self.assertEqual(context_address, Address.objects.last().pk)
+    
+class UserAddressesViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('etherscan_app:user_addresses')
