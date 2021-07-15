@@ -29,9 +29,11 @@ def show_results(request):
         return HttpResponse(status=500)
 
     result_data = response_data['result']
+    user = request.user
 
     if valid_address:
         address_instance, _ = Address.objects.get_or_create(address=address)
+        address_instance.users.add(user)
         pk = address_instance.pk
         async_task('etherscan_app.utils.create_transaction', pk, result_data)
         return render(request, 'etherscan_app/results.html', {'address': pk})
