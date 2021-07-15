@@ -10,13 +10,13 @@ from etherscan_app.models import Address, Transaction
 from etherscan_app.utils import create_transaction, validate_address
 
 
-
 @patch('etherscan_app.utils.requests.get')
 class ValidateAddressTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.url = reverse('results') 
+        self.url = reverse('etherscan_app:results') 
         self.res = Mock(spec=Response)
+        self.user_instance = User.objects.create(username='testuser')
 
     def test_validate_address_with_valid_address(self, request_patch):
         """
@@ -68,19 +68,22 @@ class ValidateAddressTests(TestCase):
         request_patch.return_value = self.res
     
         address = "1234567890aaazzz"
+        self.client.force_login(self.user_instance)
         response = self.client.post(self.url, {'adress': address})
 
         self.assertEqual(response.status_code, 400)
 class CreateAddressTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.url = reverse('results')
+        self.url = reverse('etherscan_app:results')
         self.address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
         self.address_instance = Address.objects.create(address=self.address)
         self.res = Mock(spec = Response)
+        self.user_instance = User.objects.create(username='testuser')
     
+    @patch('etherscan_app.views.async_task')
     @patch('etherscan_app.utils.requests.get')
-    def test_create_address_with_new_address(self, request_patch):
+    def test_create_address_with_new_address(self, request_patch, async_task_patch):
         """
         Takes in a new valid address
         Creates an address instance
@@ -94,6 +97,7 @@ class CreateAddressTests(TestCase):
         request_patch.return_value = self.res
 
         new_address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
+        self.client.force_login(self.user_instance)
         self.client.post(self.url, {'address': new_address})
         self.assertEqual(Address.objects.latest('created_at').address, new_address)
 
@@ -101,7 +105,7 @@ class CreateAddressTests(TestCase):
 class CreateTransactionTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.url = reverse('results')
+        self.url = reverse('etherscan_app:results')
         self.res = Mock(spec=Response)
         self.address_instance = Address.objects.create(address="0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF")
         self.transaction_data = [{
