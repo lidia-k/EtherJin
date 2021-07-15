@@ -18,7 +18,10 @@ def search(request):
 
 @login_required(login_url='/')
 def show_results(request):
-    address = request.POST.get("address")
+    if request.method == 'POST':
+        address = request.POST.get("address")
+    else:
+        address = request.GET.get('address')
     valid_address, response_data = validate_address(address)
     if not valid_address and not response_data:
         # no api token
