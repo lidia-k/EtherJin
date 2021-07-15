@@ -42,4 +42,6 @@ def show_results(request):
 def show_user_addresses(request):
     user = request.user
     addresses = user.addresses.all()
+    if not addresses: 
+        return HttpResponse(f"{user.username}, you aren't following any address yet..", status=404)
     return render(request, 'etherscan_app/user_addresses.html', {'addresses': addresses})
