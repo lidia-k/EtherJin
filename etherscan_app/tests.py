@@ -54,24 +54,6 @@ class ValidateAddressTests(TestCase):
         self.assertFalse(valid_address)
         self.assertEqual(response_data['result'], "Error! Invalid address format")
 
-    def test_results_view_with_invalid_address(self, request_patch):
-        """
-        Takes in an invalid address
-        'results' view returns 400  
-        """
-        patched_data = {
-            "status":"0",
-            "message":"NOTOK",
-            "result":"Error! Invalid address format"
-            }
-        self.res.json.return_value = patched_data
-        request_patch.return_value = self.res
-    
-        address = "1234567890aaazzz"
-        self.client.force_login(self.user_instance)
-        response = self.client.post(self.url, {'adress': address})
-
-        self.assertEqual(response.status_code, 400)
 class CreateAddressTests(TestCase):
     def setUp(self):
         self.client = Client()
@@ -167,28 +149,49 @@ class CreateTransactionTests(TestCase):
         self.assertTrue(transaction_count < Transaction.objects.filter(address=self.address_instance).count())
 
 @patch('etherscan_app.views.validate_address')
-@patch('etherscan_app.views.async_task')
 class ResultsViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('etherscan_app:results')
         self.user_instance = User.objects.create(username='testuser')
-        self.address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
-        self.response_data = {
+
+    @patch('etherscan_app.views.async_task')    
+    def test_results_view_with_valid_address(self, async_task_patch, validate_address_patch):    
+        """
+        Takes in a valid address
+        Renders 'results.html' template with the address as context
+        """
+        response_data = {
             "status":"1",
             "message":"OK",
             "result":"result data"
         }
-
-    def test_show_results(self, async_task_patch, validate_address_patch):    
-        validate_address_patch.return_value = True, self.response_data
+        validate_address_patch.return_value = True, response_data
         
         self.client.force_login(self.user_instance)
-        res = self.client.get(self.url, {'address': self.address})
+        address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
+        res = self.client.get(self.url, {'address': address})
         context_address = res.context.get('address')
        
         self.assertEqual(context_address, Address.objects.last().pk)
+
+    def test_results_view_with_invalid_address(self, validate_address_patch):
+        """
+        Takes in an invalid address
+        'results' view returns 400  
+        """
+        response_data = {
+            "status":"0",
+            "message":"NOTOK",
+            "result":"Error! Invalid address format"
+        }
+        validate_address_patch.return_value = False, response_data
     
+        address = "1234567890aaazzz"
+        self.client.force_login(self.user_instance)
+        response = self.client.get(self.url, {'adress': address})
+
+        self.assertEqual(response.status_code, 400)  
 class UserAddressesViewTests(TestCase):
     def setUp(self):
         self.client = Client()
