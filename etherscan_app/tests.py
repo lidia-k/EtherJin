@@ -221,17 +221,21 @@ class UserAddressesViewTests(TestCase):
 class ListTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.url = reverse('etherscan_app:create_list')
         self.user = User.objects.create(username='testuser')
 
     def test_create_list(self):
         self.client.force_login(self.user)
+        url = reverse('etherscan_app:create_list')
         list_name = 'test_list'
-        self.client.post(self.url, {'list_name': list_name})
+        self.client.post(url, {'list_name': list_name})
         self.assertEqual(list_name, Folder.objects.last().folder)
 
     def test_retrieve_list(self):
-        pass
+        url = reverse('etherscan_app:show_lists')
+        self.client.force_login(self.user)
+        res = self.client.get(url)
+        context_lists = [x.folder for x in res.context.get('lists')]
+        self.assertEqual(context_lists, [x.folder for x in self.user.lists.all()])
 
     def test_update_list(self):
         pass
