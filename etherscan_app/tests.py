@@ -231,11 +231,15 @@ class ListTests(TestCase):
         self.assertEqual(list_name, Folder.objects.last().folder)
 
     def test_retrieve_list(self):
+        lists = ['test1', 'test2', 'test3']
+        for list in lists: 
+            Folder.objects.create(user=self.user, folder=list)
+
         url = reverse('etherscan_app:show_lists')
         self.client.force_login(self.user)
         res = self.client.get(url)
         context_lists = [x.folder for x in res.context.get('lists')]
-        self.assertEqual(context_lists, [x.folder for x in self.user.lists.all()])
+        self.assertEqual(context_lists, [x.folder for x in self.user.folders.all()])
 
     def test_update_list(self):
         pass
