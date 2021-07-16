@@ -2,7 +2,9 @@ from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect, render
 
 
-def home(request):
+def login(request):
+    if request.user.is_authenticated:
+        return redirect('etherscan_app:index')
     return render(request, 'django_social_app/home.html')
 
 def logout(request):

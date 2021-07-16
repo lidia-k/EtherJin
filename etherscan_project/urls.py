@@ -23,6 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('app/', include('etherscan_app.urls', namespace='etherscan_app')),
     path('', include('social_django.urls', namespace='social')),
-    path('', views.home), 
+    path('', views.login), 
     path('logout/', views.logout, name="logout"),
 ]
