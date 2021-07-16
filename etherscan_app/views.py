@@ -57,5 +57,5 @@ def create_list(request):
         return render(request, 'etherscan_app/create_list.html')
     else: 
         list_name = request.POST.get("list_name")
-        Folder.objects.create(folder = list_name)
+        Folder.objects.create(user = request.user,folder = list_name)
         return HttpResponse(status=200)
