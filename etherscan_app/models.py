@@ -4,6 +4,7 @@ from django.db import models
 
 
 class Folder(models.Model):
+    user = models.ForeignKey(User, related_name='folders', on_delete=models.CASCADE)
     folder = models.CharField(max_length=50)
 class Address(models.Model):
     users = models.ManyToManyField(User, related_name='addresses')
