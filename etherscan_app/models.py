@@ -2,10 +2,15 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+
+class Folder(models.Model):
+    folder_name = models.CharField(max_length=50)
 class Address(models.Model):
     users = models.ManyToManyField(User, related_name='addresses')
+    folders = models.ManyToManyField(Folder, related_name='folders')
     address = models.CharField(max_length=50, unique=True, primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 class Transaction(models.Model):
     address = models.ForeignKey(Address, related_name='transactions', on_delete=models.CASCADE)
     hash = models.CharField(max_length=200, unique=True, primary_key=True)
