@@ -230,7 +230,7 @@ class ListTests(TestCase):
         self.client.post(url, {'list_name': list_name})
         self.assertEqual(list_name, Folder.objects.last().folder)
 
-    def test_retrieve_list(self):
+    def test_retrieve_lists(self):
         lists = ['test1', 'test2', 'test3']
         for list in lists: 
             Folder.objects.create(user=self.user, folder=list)
