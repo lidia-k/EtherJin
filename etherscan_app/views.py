@@ -59,3 +59,7 @@ def create_list(request):
         list_name = request.POST.get("list_name")
         Folder.objects.create(user = request.user,folder = list_name)
         return HttpResponse(status=200)
+
+@login_required(login_url='/')
+def show_lists(request):
+    pass
