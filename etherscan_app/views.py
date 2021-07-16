@@ -62,4 +62,8 @@ def create_list(request):
 
 @login_required(login_url='/')
 def show_lists(request):
-    pass
+    user = request.user
+    lists = user.folders.all()
+    if lists: 
+        return render(request, 'etherscan_app/show_lists.html', {'lists': lists})
+    return HttpResponse(f"{user.username}, you haven't created any list yet..", status=404)
