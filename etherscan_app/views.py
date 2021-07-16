@@ -50,3 +50,9 @@ def show_user_addresses(request):
     if not addresses: 
         return HttpResponse(f"{user.username}, you aren't following any address yet..", status=404)
     return render(request, 'etherscan_app/user_addresses.html', {'addresses': addresses})
+
+@login_required(login_url='/')
+def create_list(request):
+    if request.method == "GET":
+        return render(request, 'etherscan_app/create_list.html')
+    
