@@ -208,9 +208,9 @@ class UserAddressesViewTests(TestCase):
             address_instance.users.add(self.user_instance)
 
         self.client.force_login(self.user_instance)
-        self.res = self.client.get(self.url)
+        res = self.client.get(self.url)
         
-        context_addresses = [x.address for x in self.res.context.get('addresses')]
+        context_addresses = [x.address for x in res.context.get('addresses')]
         self.assertEqual(context_addresses, [x.address for x in self.user_instance.addresses.all()])
 
     def test_show_user_address_view_without_addresses(self):
