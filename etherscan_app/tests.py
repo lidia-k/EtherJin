@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from requests.models import Response
 
-from etherscan_app.models import Address, Transaction
+from etherscan_app.models import Address, Transaction, Folder
 from etherscan_app.utils import create_transaction, validate_address
 
 
@@ -217,3 +217,24 @@ class UserAddressesViewTests(TestCase):
         self.client.force_login(self.user_instance)
         res = self.client.get(self.url)
         self.assertEqual(res.status_code, 404)
+
+class ListTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('etherscan_app:create_list')
+        self.user = User.objects.create(username='testuser')
+
+    def test_create_list(self):
+        self.client.force_login(self.user)
+        list_name = 'test_list'
+        self.client.post(self.url, {'list_name': list_name})
+        self.assertEqual(list_name, Folder.objects.last().folder)
+
+    def test_retrieve_list(self):
+        pass
+
+    def test_update_list(self):
+        pass
+
+    def test_delete_list(self):
+        pass

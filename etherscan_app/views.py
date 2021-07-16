@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 from django_q.tasks import async_task
 
-from etherscan_app.models import Address
+from etherscan_app.models import Address, Folder
 from etherscan_app.utils import validate_address
 
 
@@ -55,4 +55,7 @@ def show_user_addresses(request):
 def create_list(request):
     if request.method == "GET":
         return render(request, 'etherscan_app/create_list.html')
-    
+    else: 
+        list_name = request.POST.get("list_name")
+        Folder.objects.create(folder = list_name)
+        return HttpResponse(status=200)
