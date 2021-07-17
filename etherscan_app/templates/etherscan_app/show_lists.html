@@ -2,8 +2,8 @@
     <ul>
         <li>
             {{ x.folder }} 
-            <button type='submit' formaction="{% url 'etherscan_app:update_list' %}">Edit</button>
-            <button type='submit' formaction="{% url 'etherscan_app:delete_list' %}">Delete</button>
+            <button type='submit' formaction="{% url 'etherscan_app:update_list' %}" formmethod="post">Edit</button>
+            <button type='submit' formaction="{% url 'etherscan_app:delete_list' %}" formmethod="post"></button>>Delete</button>
         </li>
     </ul>
 {% endfor %}
