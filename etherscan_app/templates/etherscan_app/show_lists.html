@@ -1,7 +1,9 @@
 {% for x in lists %}
     <ul>
         <li>
-            {{ x.folder }}
+            {{ x.folder }} 
+            <button type='submit' formaction="{% url 'etherscan_app:update_list' %}">Edit</button>
+            <button type='submit' formaction="{% url 'etherscan_app:delete_list' %}">Delete</button>
         </li>
     </ul>
 {% endfor %}
