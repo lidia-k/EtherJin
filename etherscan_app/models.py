@@ -7,6 +7,10 @@ class Folder(models.Model):
     user = models.ForeignKey(User, related_name='folders', on_delete=models.CASCADE)
     #TODO rename "folder" to "folder_name"
     folder = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.folder
+
 class Address(models.Model):
     users = models.ManyToManyField(User, related_name='addresses')
     folders = models.ManyToManyField(Folder, related_name='folders')

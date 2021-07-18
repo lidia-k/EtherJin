@@ -57,7 +57,14 @@ def save_address_to_folder(request):
     folder = request.POST.get('folder')
     folder = Folder.objects.get(user=user, folder=folder)
     address.folders.add(folder)
-    return redirect(reverse('etherscan_app:show-folders'))
+    return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':folder}))
+
+@login_required(login_url='/')
+def show_folder(request, folder):
+    #TODO replace folders attr with addresses once the m2m field name is fixed
+    folder = Folder.objects.get(user=request.user, folder=folder)
+    addresses = folder.folders.all()
+    return render(request, 'etherscan_app/show_folder.html', {'folder': folder, 'addresses': addresses})
 
 @login_required(login_url='/')
 def show_user_addresses(request):
