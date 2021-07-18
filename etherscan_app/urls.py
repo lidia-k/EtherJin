@@ -11,6 +11,7 @@ urlpatterns = [
     path('results/<str:address>', views.show_results, name='results'),
     path('save-address-to-folder', views.save_address_to_folder, name="save-address-to-folder"),
     path('folders/<str:folder>', views.show_folder, name="show-folder"),
+    path('<str:address>/transactions', views.show_transactions, name='show-transactions'),
     path('user_addresses', views.show_user_addresses, name='user_addresses'),
     path('create-list', views.create_list, name='create-list'),
     path('view-lists', views.show_folders, name="show-folders"),

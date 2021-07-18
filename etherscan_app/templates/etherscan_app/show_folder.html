@@ -2,6 +2,6 @@
 
 <ul>
     {% for x in addresses %}
-        <li><a href>{{ x.address }}</a></li>
+        <li><a href="{% url 'etherscan_app:show-transactions' x.address %}">{{ x.address }}</a></li>
     {% endfor %}
 </ul>

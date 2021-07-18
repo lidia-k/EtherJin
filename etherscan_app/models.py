@@ -13,6 +13,7 @@ class Folder(models.Model):
 
 class Address(models.Model):
     users = models.ManyToManyField(User, related_name='addresses')
+    #TODO rename related_name folders to addressess
     folders = models.ManyToManyField(Folder, related_name='folders')
     address = models.CharField(max_length=50, unique=True, primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)

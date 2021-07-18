@@ -67,6 +67,12 @@ def show_folder(request, folder):
     return render(request, 'etherscan_app/show_folder.html', {'folder': folder, 'addresses': addresses})
 
 @login_required(login_url='/')
+def show_transactions(request, address):
+    address = Address.objects.get(address=address)
+    transactions = address.transactions.all()
+    return render(request, 'etherscan_app/show_transactions.html', {'address': address, 'transactions': transactions})
+
+@login_required(login_url='/')
 def show_user_addresses(request):
     user = request.user
     addresses = user.addresses.all()
