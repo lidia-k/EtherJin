@@ -7,7 +7,7 @@ from django_q.tasks import async_task
 
 from etherscan_app.models import Address, Folder
 from etherscan_app.utils import validate_address
-from etherscan_app.forms import FolderSelectionForm
+from etherscan_app.forms import FolderSelectionForm, FolderCreationFrom
 
 
 @login_required(login_url='/')
@@ -45,9 +45,15 @@ def submit_address(request):
 @login_required(login_url='/')
 def show_results(request, address):
     address = Address.objects.get(address=address)
+    folder_selection_form = FolderSelectionForm(request.user.folders)
+    folder_creation_form = FolderCreationFrom()
 
-    form = FolderSelectionForm(request.user.folders)
-    return render(request, 'etherscan_app/results.html', {'address': address.pk, 'form': form})
+    context = {
+        'address': address.pk, 
+        'folder_selection_form': folder_selection_form,
+        'folder_creation_form': folder_creation_form,
+    }
+    return render(request, 'etherscan_app/results.html', context=context)
 
 @login_required(login_url='/')
 def save_address_to_folder(request):
@@ -81,13 +87,18 @@ def show_user_addresses(request):
     return render(request, 'etherscan_app/user_addresses.html', {'addresses': addresses})
 
 @login_required(login_url='/')
-def create_list(request):
+def create_folder(request):
     if request.method == "GET":
-        return render(request, 'etherscan_app/create-list.html')
+        return render(request, 'etherscan_app/create-folder.html')
     else: 
-        list_name = request.POST.get("list_name")
-        Folder.objects.create(user = request.user,folder = list_name)
-        return HttpResponse(status=200)
+        user = request.user
+        folder_name = request.POST.get("folder")
+        #TODO rename folder field of Folder to folder_name once the model is fixed
+        folder = Folder.objects.create(user=user, folder=folder_name)
+        address = request.POST.get("address")
+        address = Address.objects.get(users=user, address=address)
+        address.folders.add(folder)
+        return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':folder}))
 
 @login_required(login_url='/')
 def show_folders(request):

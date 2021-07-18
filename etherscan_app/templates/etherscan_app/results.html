@@ -1,11 +1,23 @@
+<style>
+    form {
+        text-indent: 20px;
+    }
+</style>
 <p>The transaction data of {{ address }}' is successfully saved.</p>
 
-<!--TODO inside the form, add the address by using a hidden input field with HTML-->
+<p>Save the address to an existing list or create a new list below.</p>
 <form action="{% url 'etherscan_app:save-address-to-folder' %}" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ folder_selection_form }}
     <input type="hidden" name="address" value="{{ address }}">
     <input type="submit" value="Save">
+</form>
+  
+<form action="{% url 'etherscan_app:create-folder' %}" method="post">
+    {% csrf_token %}
+    {{ folder_creation_form }}
+    <input type="hidden" name="address" value="{{ address }}">
+    <input type="submit" value="Create and Save">
 </form>
 
 <br><br><a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>
