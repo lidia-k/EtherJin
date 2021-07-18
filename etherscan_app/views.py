@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
 from django_q.tasks import async_task
 
 from etherscan_app.models import Address, Folder
 from etherscan_app.utils import validate_address
+from etherscan_app.forms import FolderSelectionForm
 
 
 @login_required(login_url='/')
@@ -17,11 +19,9 @@ def search(request):
     return render(request, 'etherscan_app/search.html')
 
 @login_required(login_url='/')
-def show_results(request):
-    if request.method == 'POST':
-        address = request.POST.get("address")
-    else:
-        address = request.GET.get('address')
+def submit_address(request):
+    #TODO make it faster to show the results 
+    address = request.POST.get('address')
     valid_address, response_data = validate_address(address)
     if not valid_address and not response_data:
         # no api token
@@ -36,12 +36,28 @@ def show_results(request):
         address_instance.users.add(user)
         pk = address_instance.pk
         async_task('etherscan_app.utils.create_transaction', pk, result_data)
-        return render(request, 'etherscan_app/results.html', {'address': pk})
+        return redirect(reverse('etherscan_app:results', kwargs={'address': address}))
     elif result_data == 'Error! Invalid address format':
         return HttpResponse(f"{result_data}", status=400)
-    
     print(f'status:{response_data["status"]}, message: {response_data["message"]}, result: {result_data}')
     return HttpResponse(status=400)
+
+@login_required(login_url='/')
+def show_results(request, address):
+    address = Address.objects.get(address=address)
+
+    form = FolderSelectionForm(request.user.folders)
+    return render(request, 'etherscan_app/results.html', {'address': address.pk, 'form': form})
+
+@login_required(login_url='/')
+def save_address_to_folder(request):
+    user = request.user
+    address = request.POST.get("address")
+    address = Address.objects.get(users=user, address=address)
+    folder = request.POST.get('folder')
+    folder = Folder.objects.get(user=user, folder=folder)
+    address.folders.add(folder)
+    return redirect(reverse('etherscan_app:show-folders'))
 
 @login_required(login_url='/')
 def show_user_addresses(request):
@@ -54,16 +70,17 @@ def show_user_addresses(request):
 @login_required(login_url='/')
 def create_list(request):
     if request.method == "GET":
-        return render(request, 'etherscan_app/create_list.html')
+        return render(request, 'etherscan_app/create-list.html')
     else: 
         list_name = request.POST.get("list_name")
         Folder.objects.create(user = request.user,folder = list_name)
         return HttpResponse(status=200)
 
 @login_required(login_url='/')
-def show_lists(request):
+def show_folders(request):
     user = request.user
     lists = user.folders.all()
     if lists: 
         return render(request, 'etherscan_app/show_lists.html', {'lists': lists})
     return HttpResponse(f"{user.username}, you haven't created any list yet..", status=404)
+

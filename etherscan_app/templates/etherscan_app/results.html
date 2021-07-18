@@ -1,3 +1,16 @@
 <p>The transaction data of {{ address }}' is successfully saved.</p>
-<br>
-<a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>
+
+<!--TODO inside the form, add the address by using a hidden input field with HTML-->
+<form action="{% url 'etherscan_app:save-address-to-folder' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="hidden" name="address" value="{{ address }}">
+    <input type="submit" value="Save">
+</form>
+
+<br><br><a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>
+
+<!-- TODO
+1) If there are lists, create html select tag to save the address to the selected list
+2) Create a form that allows a user to create a new list that includes the address
+-->
