@@ -11,3 +11,6 @@ class FolderSelectionForm(forms.Form):
 
 class FolderCreationFrom(forms.Form):
     folder = forms.CharField(label='Folder name', max_length=50)
+
+class FolderRenameForm(forms.Form):
+    folder_name = forms.CharField(label='New name', max_length=50)

@@ -1,9 +1,10 @@
+<form>
 {% if folders %}
     {% for x in folders %}
         <ul>
             <li>
-                {{ x.folder }} 
-                <button type='submit' formaction="{% url 'etherscan_app:edit-folder' %}" formmethod="post">Edit</button>
+                <a href="">{{ x.folder }}</a>
+                <input type='submit' formaction="{% url 'etherscan_app:edit-folder-name' x.folder %}" formmethod="get" value="Edit">
                 <button type='submit' formaction="{% url 'etherscan_app:delete-folder' %}" formmethod="post">Delete</button>
             </li>
         </ul>
@@ -12,3 +13,4 @@
     <p>You haven't created any folder yet.
     <a href="{% url 'etherscan_app:create-folder' %}">Create a new folder here.</a></p>
 {% endif %}
+</form>

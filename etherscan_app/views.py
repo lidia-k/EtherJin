@@ -7,7 +7,7 @@ from django_q.tasks import async_task
 
 from etherscan_app.models import Address, Folder
 from etherscan_app.utils import validate_address
-from etherscan_app.forms import AddressSearchForm, FolderSelectionForm, FolderCreationFrom
+from etherscan_app.forms import AddressSearchForm, FolderSelectionForm, FolderCreationFrom, FolderRenameForm
 
 
 @login_required(login_url='/')
@@ -91,7 +91,7 @@ def show_user_addresses(request):
 def create_folder(request):
     if request.method == "GET":
         folder_creation_form = FolderCreationFrom()
-        return render(request, 'etherscan_app/create-folder.html', {'folder_creation_form': folder_creation_form})
+        return render(request, 'etherscan_app/create_folder.html', {'folder_creation_form': folder_creation_form})
     else: 
         user = request.user
         folder_name = request.POST.get("folder")
@@ -110,8 +110,17 @@ def show_folders(request):
     return render(request, 'etherscan_app/show_folders.html', {'folders': folders})
 
 @login_required(login_url='/')
-def edit_folder(request):
-    pass
+def edit_folder_name(request, folder):
+    if request.method == "GET":
+        form = FolderRenameForm()
+        return render(request, 'etherscan_app/edit_folder_name.html', {'folder': folder, 'form': form})
+    else:
+        new_name = request.POST.get('folder_name')
+        folder = Folder.objects.get(user=request.user, folder=folder)
+        #TODO rename the attribute folder to folder_name once the Folder model is fixed.
+        folder.folder = new_name
+        folder.save()
+        return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':new_name}))
 
 @login_required(login_url='/')
 def delete_folder(request):

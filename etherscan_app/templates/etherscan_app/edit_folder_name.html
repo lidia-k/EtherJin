@@ -1,0 +1,6 @@
+<h3>Rename "{{ folder }}"</h3>
+<form action="{% url 'etherscan_app:edit-folder-name' folder %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Save">
+</form>
