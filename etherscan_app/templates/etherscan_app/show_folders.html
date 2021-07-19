@@ -1,11 +1,12 @@
 <form>
+{% csrf_token %}
 {% if folders %}
     {% for x in folders %}
         <ul>
             <li>
                 <a href="">{{ x.folder }}</a>
                 <input type='submit' formaction="{% url 'etherscan_app:edit-folder-name' x.folder %}" formmethod="get" value="Edit">
-                <button type='submit' formaction="{% url 'etherscan_app:delete-folder' %}" formmethod="post">Delete</button>
+                <input type='submit' formaction="{% url 'etherscan_app:delete-folder' x.folder %}" formmethod="post" value="Delete">
             </li>
         </ul>
     {% endfor %}
