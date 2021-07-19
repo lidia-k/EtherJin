@@ -8,4 +8,4 @@ class FolderSelectionForm(forms.Form):
         self.fields['folder'].queryset = folders.values_list('folder', flat=True)
 
 class FolderCreationFrom(forms.Form):
-    folder = forms.CharField(label='List name', max_length=50)
+    folder = forms.CharField(label='Folder name', max_length=50)

@@ -13,6 +13,6 @@ urlpatterns = [
     path('folders/<str:folder>', views.show_folder, name="show-folder"),
     path('<str:address>/transactions', views.show_transactions, name='show-transactions'),
     path('user_addresses', views.show_user_addresses, name='user_addresses'),
-    path('create-list', views.create_folder, name='create-folder'),
+    path('create-folder', views.create_folder, name='create-folder'),
     path('view-lists', views.show_folders, name="show-folders"),
 ]

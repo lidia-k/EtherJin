@@ -5,7 +5,7 @@
 </style>
 <p>The transaction data of {{ address }}' is successfully saved.</p>
 
-<p>Save the address to an existing list or create a new list below.</p>
+<p>Save the address to an existing folder or create a new folder below.</p>
 <form action="{% url 'etherscan_app:save-address-to-folder' %}" method="post">
     {% csrf_token %}
     {{ folder_selection_form }}
@@ -21,8 +21,3 @@
 </form>
 
 <br><br><a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>
-
-<!-- TODO
-1) If there are lists, create html select tag to save the address to the selected list
-2) Create a form that allows a user to create a new list that includes the address
--->
