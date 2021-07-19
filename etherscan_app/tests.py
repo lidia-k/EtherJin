@@ -55,7 +55,7 @@ class ValidateAddressTests(TestCase):
 class CreateAddressTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.url = reverse('etherscan_app:results')
+        self.url = reverse('etherscan_app:submit-address')
         self.address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
         self.address_instance = Address.objects.create(address=self.address)
         self.res = Mock(spec = Response)
