@@ -32,9 +32,7 @@ def create_transaction(pk, result_data):
     """
     address_instance = Address.objects.get(pk=pk)
     transactions = []
-    #TODO fix the for loop line: for transaction in result_data
-    for i in range(len(result_data)):
-        transaction = result_data[i]
+    for transaction in result_data:
         hash = transaction['hash']
         if not address_instance.transactions.filter(hash=hash):
             transaction_instance = Transaction(
