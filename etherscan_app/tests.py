@@ -210,11 +210,24 @@ class UserAddressesViewTests(TestCase):
         res = self.client.get(self.url)
         self.assertEqual(res.status_code, 404)
 
-class ListTests(TestCase):
+class FolderRelatedTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create(username='testuser')
         self.lists = ['test1', 'test2', 'test3']
+
+    def test_save_address_to_folder(self):
+        address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
+        address_instance = Address.objects.create(address=address)
+        address_instance.users.add(self.user)
+        folder_name = 'test_folder'
+        folder = Folder.objects.create(user=self.user, folder_name=folder_name)
+
+        url = reverse('etherscan_app:save-address-to-folder')
+        self.client.force_login(self.user)
+        self.client.post(url, {'address': address, 'folder': folder_name})
+        
+        self.assertTrue(folder.addresses.get(address=address))
 
     def test_create_list(self):
         self.client.force_login(self.user)

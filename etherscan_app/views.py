@@ -59,11 +59,12 @@ def show_results(request, address):
 
 @login_required(login_url='/')
 def save_address_to_folder(request):
+    import pdb; pdb.set_trace()
     user = request.user
     address = request.POST.get("address")
     address = Address.objects.get(users=user, address=address)
-    folder = request.POST.get('folder')
-    folder = Folder.objects.get(user=user, folder=folder)
+    folder_name = request.POST.get('folder')
+    folder = Folder.objects.get(user=user, folder_name=folder_name)
     address.folders.add(folder)
     return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':folder}))
 
