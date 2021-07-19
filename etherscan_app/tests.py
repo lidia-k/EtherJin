@@ -6,15 +6,13 @@ from django.urls import reverse
 
 from requests.models import Response
 
-from etherscan_app.models import Address, Transaction, Folder
+from etherscan_app.models import Address, Folder, Transaction
 from etherscan_app.utils import create_transaction, validate_address
 
 
 @patch('etherscan_app.utils.requests.get')
 class ValidateAddressTests(TestCase):
     def setUp(self):
-        self.client = Client()
-        self.url = reverse('etherscan_app:results') 
         self.res = Mock(spec=Response)
         self.user_instance = User.objects.create(username='testuser')
 
@@ -222,6 +220,7 @@ class ListTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create(username='testuser')
+        self.lists = ['test1', 'test2', 'test3']
 
     def test_create_list(self):
         self.client.force_login(self.user)
@@ -231,8 +230,7 @@ class ListTests(TestCase):
         self.assertEqual(list_name, Folder.objects.last().folder)
 
     def test_retrieve_lists(self):
-        lists = ['test1', 'test2', 'test3']
-        for list in lists: 
+        for list in self.lists: 
             Folder.objects.create(user=self.user, folder=list)
 
         url = reverse('etherscan_app:show_lists')
@@ -243,6 +241,18 @@ class ListTests(TestCase):
 
     def test_update_list(self):
         pass
+        """
+        for list in self.lists: 
+            Folder.objects.create(user=self.user, folder=list)
+
+        updated_lists = {'test1', 'test2', ''}
+
+        self.client.force_login(self.user)
+        url = reverse('etherscan_app:update_list')
+        list = self.client.get(url, {'list': })
+
+        self.client.post(url, {'list': ''})
+        """
 
     def test_delete_list(self):
         pass
