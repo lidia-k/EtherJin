@@ -69,7 +69,7 @@ def save_address_to_folder(request):
 
 @login_required(login_url='/')
 def show_folder(request, folder):
-    folder = Folder.objects.get(user=request.user, folder=folder)
+    folder = Folder.objects.get(user=request.user, folder_name=folder)
     addresses = folder.addresses.all()
     return render(request, 'etherscan_app/show_folder.html', {'folder': folder, 'addresses': addresses})
 

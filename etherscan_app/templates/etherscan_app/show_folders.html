@@ -4,9 +4,9 @@
     {% for x in folders %}
         <ul>
             <li>
-                <a href="{% url 'etherscan_app:show-folder' x.folder %}">{{ x.folder }}</a>
-                <input type='submit' formaction="{% url 'etherscan_app:edit-folder-name' x.folder %}" formmethod="get" value="Edit">
-                <input type='submit' formaction="{% url 'etherscan_app:delete-folder' x.folder %}" formmethod="post" value="Delete">
+                <a href="{% url 'etherscan_app:show-folder' x.folder_name %}">{{ x.folder_name }}</a>
+                <input type='submit' formaction="{% url 'etherscan_app:edit-folder-name' x.folder_name %}" formmethod="get" value="Edit">
+                <input type='submit' formaction="{% url 'etherscan_app:delete-folder' x.folder_name %}" formmethod="post" value="Delete">
             </li>
         </ul>
     {% endfor %}
