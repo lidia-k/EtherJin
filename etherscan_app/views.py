@@ -7,7 +7,7 @@ from django_q.tasks import async_task
 
 from etherscan_app.models import Address, Folder
 from etherscan_app.utils import validate_address
-from etherscan_app.forms import FolderSelectionForm, FolderCreationFrom
+from etherscan_app.forms import AddressSearchForm, FolderSelectionForm, FolderCreationFrom
 
 
 @login_required(login_url='/')
@@ -16,7 +16,8 @@ def index(request):
 
 @login_required(login_url='/')
 def search(request):
-    return render(request, 'etherscan_app/search.html')
+    form = AddressSearchForm()
+    return render(request, 'etherscan_app/search.html', {'form': form})
 
 @login_required(login_url='/')
 def submit_address(request):
