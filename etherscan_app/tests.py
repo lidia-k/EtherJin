@@ -133,50 +133,24 @@ class CreateTransactionTests(TestCase):
        
         self.assertTrue(transaction_count < Transaction.objects.filter(address=self.address_instance).count())
 
-@patch('etherscan_app.views.validate_address')
 class ResultsViewTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.url = reverse('etherscan_app:results')
         self.user_instance = User.objects.create(username='testuser')
 
-    @patch('etherscan_app.views.async_task')    
     def test_results_view_with_valid_address(self, async_task_patch, validate_address_patch):    
         """
         Takes in a valid address
         Renders 'results.html' template with the address as context
         """
-        response_data = {
-            "status":"1",
-            "message":"OK",
-            "result":"result data"
-        }
-        validate_address_patch.return_value = True, response_data
-        
         self.client.force_login(self.user_instance)
         address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
-        res = self.client.get(self.url, {'address': address})
+        Address.objects.create(address=address)
+        url = reverse('etherscan_app:results', kwargs={'address': address})
+        res = self.client.get(url)
         context_address = res.context.get('address')
        
         self.assertEqual(context_address, Address.objects.last().pk)
-
-    def test_results_view_with_invalid_address(self, validate_address_patch):
-        """
-        Takes in an invalid address
-        'results' view returns 400  
-        """
-        response_data = {
-            "status":"0",
-            "message":"NOTOK",
-            "result":"Error! Invalid address format"
-        }
-        validate_address_patch.return_value = False, response_data
-    
-        address = "1234567890aaazzz"
-        self.client.force_login(self.user_instance)
-        response = self.client.get(self.url, {'adress': address})
-
-        self.assertEqual(response.status_code, 400)  
 class UserAddressesViewTests(TestCase):
     def setUp(self):
         self.client = Client()
