@@ -89,15 +89,17 @@ def show_user_addresses(request):
 @login_required(login_url='/')
 def create_folder(request):
     if request.method == "GET":
-        return render(request, 'etherscan_app/create-folder.html')
+        folder_creation_form = FolderCreationFrom()
+        return render(request, 'etherscan_app/create-folder.html', {'folder_creation_form': folder_creation_form})
     else: 
         user = request.user
         folder_name = request.POST.get("folder")
         #TODO rename folder field of Folder to folder_name once the model is fixed
         folder = Folder.objects.create(user=user, folder=folder_name)
         address = request.POST.get("address")
-        address = Address.objects.get(users=user, address=address)
-        address.folders.add(folder)
+        if address:
+            address = Address.objects.get(users=user, address=address)
+            address.folders.add(folder)
         return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':folder}))
 
 @login_required(login_url='/')
