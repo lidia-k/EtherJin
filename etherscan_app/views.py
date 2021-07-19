@@ -106,8 +106,13 @@ def create_folder(request):
 @login_required(login_url='/')
 def show_folders(request):
     user = request.user
-    lists = user.folders.all()
-    if lists: 
-        return render(request, 'etherscan_app/show_lists.html', {'lists': lists})
-    return HttpResponse(f"{user.username}, you haven't created any list yet..", status=404)
+    folders = user.folders.all()
+    return render(request, 'etherscan_app/show_folders.html', {'folders': folders})
 
+@login_required(login_url='/')
+def edit_folder(request):
+    pass
+
+@login_required(login_url='/')
+def delete_folder(request):
+    pass

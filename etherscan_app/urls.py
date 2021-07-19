@@ -14,5 +14,7 @@ urlpatterns = [
     path('<str:address>/transactions', views.show_transactions, name='show-transactions'),
     path('user_addresses', views.show_user_addresses, name='user_addresses'),
     path('create-folder', views.create_folder, name='create-folder'),
-    path('view-lists', views.show_folders, name="show-folders"),
+    path('view-folders', views.show_folders, name="show-folders"),
+    path('edit-folder', views.edit_folder, name="edit-folder"),
+    path('delete-folder', views.delete_folder, name="delete-folder"),
 ]
