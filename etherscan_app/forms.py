@@ -1,5 +1,6 @@
 from django import forms
 
+
 class AddressSearchForm(forms.Form):
     address = forms.CharField(label="Address", max_length=50)
 class FolderSelectionForm(forms.Form):

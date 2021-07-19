@@ -1,13 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from django_q.tasks import async_task
 
+from etherscan_app.forms import (AddressSearchForm, FolderCreationFrom,
+                                 FolderRenameForm, FolderSelectionForm)
 from etherscan_app.models import Address, Folder
 from etherscan_app.utils import validate_address
-from etherscan_app.forms import AddressSearchForm, FolderSelectionForm, FolderCreationFrom, FolderRenameForm
 
 
 @login_required(login_url='/')

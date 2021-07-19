@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-
 class Folder(models.Model):
     user = models.ForeignKey(User, related_name='folders', on_delete=models.CASCADE)
     folder_name = models.CharField(max_length=50)
