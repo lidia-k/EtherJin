@@ -18,8 +18,7 @@ class ValidateAddressTests(TestCase):
 
     def test_validate_address_with_valid_address(self, request_patch):
         """
-        Takes in a valid address
-        validate_address() returns True 
+        Tests validate_address returns True when taking in a valid address
         """
         patched_data = {
             "status":"1",
@@ -35,8 +34,7 @@ class ValidateAddressTests(TestCase):
 
     def test_validate_address_with_invalid_address(self, request_patch):
         """
-        Takes in an invalid address
-        validate_address() returns False 
+        Tests validate_address return False when taking in an invalid address
         """
         patched_data = {
             "status":"0",
@@ -52,7 +50,8 @@ class ValidateAddressTests(TestCase):
         self.assertFalse(valid_address)
         self.assertEqual(response_data['result'], "Error! Invalid address format")
 
-class CreateAddressTests(TestCase):
+@patch('etherscan_app.utils.requests.get')
+class SubmitAddressTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('etherscan_app:submit-address')
@@ -62,11 +61,9 @@ class CreateAddressTests(TestCase):
         self.user_instance = User.objects.create(username='testuser')
     
     @patch('etherscan_app.views.async_task')
-    @patch('etherscan_app.utils.requests.get')
-    def test_create_address_with_new_address(self, request_patch, async_task_patch):
+    def test_submit_address_with_valid_address(self, async_task_patch, request_patch):
         """
-        Takes in a new valid address
-        Creates an address instance
+        Tests submit_address successfully creates an address instance with a valid address 
         """
         patched_data = {
             "status":"1",
@@ -80,6 +77,42 @@ class CreateAddressTests(TestCase):
         self.client.force_login(self.user_instance)
         self.client.post(self.url, {'address': new_address})
         self.assertEqual(Address.objects.latest('created_at').address, new_address)
+
+    def test_submit_address_with_invalid_address(self, request_patch):
+        """
+        Tests submit_address throws 400 error when taking in an invalid address
+        """
+        patched_data = {
+            "status":"0",
+            "message":"NOTOK",
+            "result":"Error! Invalid address format"
+            }
+        self.res.json.return_value = patched_data
+        request_patch.return_value = self.res
+        
+        address = '1234567890aaazzz'
+
+        self.client.force_login(self.user_instance)
+        response = self.client.post(self.url, {'address': address})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.content.decode("utf-8"), patched_data['result'])
+
+    def test_submit_address_with_other_errors(self, request_patch):
+        """
+        Tests submit_address throws 400 error when receiving errors from the API
+        """
+        patched_data = {
+            "status":"1",
+            "message":"OK-Missing/Invalid API Key, rate limit of 1/5sec applied",
+            "result":"595623370144773018344492"}
+        self.res.json.return_value = patched_data
+        request_patch.return_value = self.res
+
+        self.client.force_login(self.user_instance)
+        response = self.client.post(self.url, {'address': self.address})
+
+        self.assertEqual(response.status_code, 400)
 
 class CreateTransactionTests(TestCase):
     def setUp(self):
