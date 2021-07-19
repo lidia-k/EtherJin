@@ -68,9 +68,8 @@ def save_address_to_folder(request):
 
 @login_required(login_url='/')
 def show_folder(request, folder):
-    #TODO replace folders attr with addresses once the m2m field name is fixed
     folder = Folder.objects.get(user=request.user, folder=folder)
-    addresses = folder.folders.all()
+    addresses = folder.addresses.all()
     return render(request, 'etherscan_app/show_folder.html', {'folder': folder, 'addresses': addresses})
 
 @login_required(login_url='/')
@@ -95,8 +94,7 @@ def create_folder(request):
     else: 
         user = request.user
         folder_name = request.POST.get("folder")
-        #TODO rename folder field of Folder to folder_name once the model is fixed
-        folder = Folder.objects.create(user=user, folder=folder_name)
+        folder = Folder.objects.create(user=user, folder_name=folder_name)
         address = request.POST.get("address")
         if address:
             address = Address.objects.get(users=user, address=address)
@@ -116,14 +114,13 @@ def edit_folder_name(request, folder):
         return render(request, 'etherscan_app/edit_folder_name.html', {'folder': folder, 'form': form})
     else:
         new_name = request.POST.get('folder_name')
-        folder = Folder.objects.get(user=request.user, folder=folder)
-        #TODO rename the attribute folder to folder_name once the Folder model is fixed.
-        folder.folder = new_name
+        folder = Folder.objects.get(user=request.user, folder_name=folder)
+        folder.folder_name = new_name
         folder.save()
         return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':new_name}))
 
 @login_required(login_url='/')
 def delete_folder(request, folder):
-    folder = Folder.objects.get(user=request.user, folder=folder)
+    folder = Folder.objects.get(user=request.user, folder_name=folder)
     folder.delete()
     return redirect(reverse('etherscan_app:show-folders'))
