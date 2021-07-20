@@ -48,7 +48,7 @@ def submit_address(request):
 def show_results(request, address):
     address = Address.objects.get(address=address)
     folder_selection_form = FolderSelectionForm(request.user.folders)
-    folder_creation_form = FolderCreationFrom()
+    folder_creation_form = FolderCreationFrom(submit_text='Create and Save')
 
     context = {
         'address': address.pk, 

@@ -1,4 +1,5 @@
 {% extends 'etherscan_app/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content%}
 <h4>The transaction data of {{ address }}' is successfully saved.</h4><br>
@@ -6,16 +7,14 @@
 <h5>Save the address to an existing folder or create a new folder below.</h5>
 <form action="{% url 'etherscan_app:save-address-to-folder' %}" method="post">
     {% csrf_token %}
-    {{ folder_selection_form }}
+    {% crispy folder_selection_form %}
     <input type="hidden" name="address" value="{{ address }}">
-    <input type="submit" value="Save">
 </form>
   
 <form action="{% url 'etherscan_app:create-folder' %}" method="post">
     {% csrf_token %}
-    {{ folder_creation_form }}
+    {% crispy folder_creation_form %}
     <input type="hidden" name="address" value="{{ address }}">
-    <input type="submit" value="Create and Save">
 </form>
 
 <br><br><a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>

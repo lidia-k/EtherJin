@@ -1,8 +1,9 @@
 {% extends 'etherscan_app/base.html'%}
+{% load crispy_forms_tags %}
+
 {% block content %}
 <form action="{% url 'etherscan_app:submit-address' %}" method="post">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit">
+    {% crispy form %}
 </form>
 {% endblock %}
