@@ -21,8 +21,8 @@ from django_social_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('app/', include('etherscan_app.urls', namespace='etherscan_app')),
-    path('', include('social_django.urls', namespace='social')),
-    path('', views.login), 
+    path('', include('etherscan_app.urls', namespace='etherscan_app')),
+    path('social-auth/', include('social_django.urls', namespace='social')),
+    path('login/', views.login), 
     path('logout/', views.logout, name="logout"),
 ]
