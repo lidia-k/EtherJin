@@ -20,5 +20,5 @@ class Transaction(models.Model):
     hash = models.CharField(max_length=200, unique=True, primary_key=True)
     from_account = models.CharField(max_length=50)
     to_account = models.CharField(max_length=50)
-    value_in_ether = models.DecimalField(max_digits=110, decimal_places=100)
+    value_in_ether = models.DecimalField(max_digits=110, decimal_places=20)
 
