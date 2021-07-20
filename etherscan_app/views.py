@@ -59,7 +59,6 @@ def show_results(request, address):
 
 @login_required(login_url='/')
 def save_address_to_folder(request):
-    import pdb; pdb.set_trace()
     user = request.user
     address = request.POST.get("address")
     address = Address.objects.get(users=user, address=address)
