@@ -11,7 +11,7 @@ class Folder(models.Model):
 class AddressUserRelationship(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     address = models.ForeignKey("Address", on_delete=models.CASCADE)
-    alias = models.CharField(max_length=20, null=True, default=None)
+    alias = models.CharField(max_length=20, null=True, default=None, unique=True)
 class Address(models.Model):
     users = models.ManyToManyField(User, related_name='addresses', through=AddressUserRelationship)
     folders = models.ManyToManyField(Folder, related_name='addresses')
