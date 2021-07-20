@@ -1,13 +1,10 @@
-<head>
-    <style>
-    table, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
-    }
-    </style>
-</head>
-<body>
-    <h1>Transactions of {{ address.address }}</h1>
+{% extends 'etherscan_app/base.html' %}
+
+{% block heading %}
+Transactions of {{ address.address }}
+{% endblock %}
+
+{% block content%}
     <table style="width:100%">
         <tr>
           <th>From</th>
@@ -22,5 +19,5 @@
             </tr>
         {% endfor %}
       </table>  
-</body>
+{% endblock %}
 
