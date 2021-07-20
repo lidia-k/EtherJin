@@ -11,16 +11,16 @@ from etherscan_app.models import Address, Folder
 from etherscan_app.utils import validate_address
 
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def index(request):
     return render(request, 'etherscan_app/index.html')
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def search(request):
     form = AddressSearchForm()
     return render(request, 'etherscan_app/search.html', {'form': form})
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def submit_address(request):
     #TODO make it faster to show the results 
     address = request.POST.get('address')
@@ -44,7 +44,7 @@ def submit_address(request):
     print(f'status:{response_data["status"]}, message: {response_data["message"]}, result: {result_data}')
     return HttpResponse(status=400)
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def show_results(request, address):
     address = Address.objects.get(address=address)
     folder_selection_form = FolderSelectionForm(request.user.folders)
@@ -57,7 +57,7 @@ def show_results(request, address):
     }
     return render(request, 'etherscan_app/results.html', context=context)
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def save_address_to_folder(request):
     import pdb; pdb.set_trace()
     user = request.user
@@ -68,19 +68,19 @@ def save_address_to_folder(request):
     address.folders.add(folder)
     return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':folder}))
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def show_folder(request, folder):
     folder = Folder.objects.get(user=request.user, folder_name=folder)
     addresses = folder.addresses.all()
     return render(request, 'etherscan_app/show_folder.html', {'folder': folder, 'addresses': addresses})
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def show_transactions(request, address):
     address = Address.objects.get(address=address)
     transactions = address.transactions.all()
     return render(request, 'etherscan_app/show_transactions.html', {'address': address, 'transactions': transactions})
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def create_folder(request):
     if request.method == "GET":
         folder_creation_form = FolderCreationFrom()
@@ -95,13 +95,13 @@ def create_folder(request):
             address.folders.add(folder)
         return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':folder}))
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def show_folders(request):
     user = request.user
     folders = user.folders.all()
     return render(request, 'etherscan_app/show_folders.html', {'folders': folders})
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def edit_folder_name(request, folder):
     if request.method == "GET":
         form = FolderRenameForm()
@@ -113,7 +113,7 @@ def edit_folder_name(request, folder):
         folder.save()
         return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':new_name}))
 
-@login_required(login_url='/')
+@login_required(login_url='/login')
 def delete_folder(request, folder):
     folder = Folder.objects.get(user=request.user, folder_name=folder)
     folder.delete()
