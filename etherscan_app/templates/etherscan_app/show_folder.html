@@ -1,5 +1,9 @@
-<h1>{{ folder.folder_name }}</h1>
+{% extends 'etherscan_app/base.html' %}
 
+{% block heading %}
+{{ folder.folder_name }}
+{% endblock %}
+{% block content %}
 {% if addresses %}
     <ul>
         {% for x in addresses %}
@@ -11,3 +15,4 @@
 {% endif %}
 
 <a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>
+{% endblock %}
