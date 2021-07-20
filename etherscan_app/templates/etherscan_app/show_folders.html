@@ -1,0 +1,25 @@
+<form>
+{% csrf_token %}
+{% if folders %}
+    {% for x in folders %}
+        <ul>
+            <li>
+                <a href="{% url 'etherscan_app:show-folder' x.folder_name %}">{{ x.folder_name }}</a>
+                <input type='submit' formaction="{% url 'etherscan_app:edit-folder-name' x.folder_name %}" formmethod="get" value="Edit">
+                <input type='submit' formaction="{% url 'etherscan_app:delete-folder' x.folder_name %}" formmethod="post" value="Delete" onclick="myFunction()">
+            </li>
+        </ul>
+    {% endfor %}
+{% else %}
+    <p>You haven't created any folder yet.
+    <a href="{% url 'etherscan_app:create-folder' %}">Create a new folder here.</a></p>
+{% endif %}
+</form>
+
+<a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>
+
+<script>
+    function myFunction() {
+        confirm("Are you sure you want to delete this folder?");
+    }
+</script>

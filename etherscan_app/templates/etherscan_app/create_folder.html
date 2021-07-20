@@ -1,0 +1,5 @@
+<form action="{% url 'etherscan_app:create-folder' %}" method="post">
+    {% csrf_token %}
+    {{ folder_creation_form }}
+    <input type="submit" value="Create">
+</form>

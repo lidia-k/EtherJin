@@ -7,6 +7,8 @@
 *.pot
 *.pyc
 __pycache__/
+etherscan_app/__pycache__/
+etherscan_app/migrations/__pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal

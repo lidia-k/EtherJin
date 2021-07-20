@@ -1,8 +1,10 @@
-from etherscan_app.models import Address, Transaction
 import os
 
+import ratelimiter
 import requests
-import ratelimiter 
+
+from etherscan_app.models import Address, Transaction
+
 
 @ratelimiter.RateLimiter(max_calls=5, period=1)
 def validate_address(address):
@@ -12,7 +14,7 @@ def validate_address(address):
     bool (whether or not the address is valid)
     dict (response json)
     """
-    api_token = os.environ.get("API_TOKEN")
+    api_token = os.environ.get("ETHERSCAN_API_TOKEN")
     if not api_token:
         return None, None
 
@@ -30,8 +32,7 @@ def create_transaction(pk, result_data):
     """
     address_instance = Address.objects.get(pk=pk)
     transactions = []
-    for i in range(len(result_data)):
-        transaction = result_data[i]
+    for transaction in result_data:
         hash = transaction['hash']
         if not address_instance.transactions.filter(hash=hash):
             transaction_instance = Transaction(
@@ -43,4 +44,3 @@ def create_transaction(pk, result_data):
             )
             transactions.append(transaction_instance)
     Transaction.objects.bulk_create(transactions)
-    

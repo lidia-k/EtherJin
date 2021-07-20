@@ -1,0 +1,26 @@
+<head>
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    </style>
+</head>
+<body>
+    <h1>Transactions of {{ address.address }}</h1>
+    <table style="width:100%">
+        <tr>
+          <th>From</th>
+          <th>To</th> 
+          <th>Value in ether</th>
+        </tr>
+        {% for x in transactions %}
+            <tr>
+            <td>{{ x.from_account }}</td>
+            <td>{{ x.to_account }}</td>
+            <td>{{ x.value_in_ether }}</td>
+            </tr>
+        {% endfor %}
+      </table>  
+</body>
+
