@@ -1,8 +1,9 @@
-{% if user and not user.is_anonymous %}
-    <h1>Welcome to the Etherscan Search, {{ user.get_full_name }}!</h1>
-    <a href="{% url 'etherscan_app:search' %}">Search for an address/contract</a><br>
-    <a href="{% url 'etherscan_app:create-folder' %}">Create a folder</a><br>
-    <a href="{% url 'etherscan_app:show-folders' %}">View folders</a>
-    <br><br>
-    <a href="{% url 'logout' %}">Logout</a>
-{% endif %}
+{% extends 'etherscan_app/base.html' %}
+{% block content %}
+<h1>Welcome to the Etherscan Search, {{ user.get_full_name }}!</h1>
+<a href="{% url 'etherscan_app:search' %}">Search for an address/contract</a><br>
+<a href="{% url 'etherscan_app:create-folder' %}">Create a folder</a><br>
+<a href="{% url 'etherscan_app:show-folders' %}">View folders</a>
+<br><br>
+<a href="{% url 'logout' %}">Logout</a>
+{% endblock %}

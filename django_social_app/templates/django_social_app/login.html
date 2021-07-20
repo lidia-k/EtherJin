@@ -1,3 +1,33 @@
-<!-- login.html -->
-<h1>Welcome!</h1>
-<a href="{% url 'social:begin' backend='linkedin-oauth2' %}">Login with Linkedin</a>
+{% extends 'etherscan_app/base.html'%}
+{% block title %}
+- Welcome
+{% endblock %}
+{% block heading %}
+Welcome! 
+{% endblock %}
+
+{% block content %}
+
+                                    <form class="user">
+                                        <div class="form-group">
+                                            <input type="email" class="form-control form-control-user"
+                                                id="exampleInputEmail" aria-describedby="emailHelp"
+                                                placeholder="Enter Email Address...">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user"
+                                                id="exampleInputPassword" placeholder="Password">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck">
+                                                <label class="custom-control-label" for="customCheck">Remember
+                                                    Me</label>
+                                            </div>
+                                        </div>
+                                        <a href="{% url 'social:begin' backend='linkedin-oauth2' %}" class="btn btn-primary btn1å btn-block">
+                                            <i class="fab fa-linkedin-f fa-fw"></i> Login with LinkedIn
+                                        </a>
+                                    </form>
+
+{% endblock %}

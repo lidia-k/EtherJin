@@ -1,3 +1,6 @@
+{% extends 'etherscan_app/base.html' %}
+
+{% block content %}
 <form>
 {% csrf_token %}
 {% if folders %}
@@ -23,3 +26,4 @@
         confirm("Are you sure you want to delete this folder?");
     }
 </script>
+{% endblock %}
