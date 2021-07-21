@@ -39,7 +39,7 @@ def submit_address(request):
         AddressUserRelationship.objects.create(user=user, address=address_instance, alias=None)
         pk = address_instance.pk
         async_task('etherscan_app.utils.create_transaction', pk, result_data)
-        return redirect(reverse('etherscan_app:results', kwargs={'address': address}))
+        return redirect(reverse('etherscan_app:results', kwargs={'address': pk}))
     elif result_data == 'Error! Invalid address format':
         return HttpResponse(f"{result_data}", status=400)
     print(f'status:{response_data["status"]}, message: {response_data["message"]}, result: {result_data}')
@@ -60,7 +60,7 @@ def save_address_alias(request):
     alias = request.POST.get('alias')
     address = request.POST.get('address')
 
-    address_user_instance = AddressUserRelationship.objects.get(address=address)
+    address_user_instance = AddressUserRelationship.objects.get(user=request.user, address=address)
     address_user_instance.alias = alias
     address_user_instance.save()
 
@@ -69,9 +69,9 @@ def save_address_alias(request):
 
 @login_required(login_url='/login')
 def create_or_select_folder(request, address):
-    #TODO add user=user in filter
-    if  AddressUserRelationship.objects.filter(alias=address).exists():
-        address = AddressUserRelationship.objects.get(alias=address).address.pk
+    user = request.user
+    if  AddressUserRelationship.objects.filter(user=user, alias=address).exists():
+        address = AddressUserRelationship.objects.get(user=user, alias=address).address.pk
 
     folder_selection_form = FolderSelectionForm(request.user.folders.all())
     folder_creation_form = FolderCreationFrom()
