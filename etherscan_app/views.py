@@ -69,6 +69,7 @@ def save_address_alias(request):
 
 @login_required(login_url='/login')
 def create_or_select_folder(request, address):
+    #TODO add user=user in filter
     if  AddressUserRelationship.objects.filter(alias=address).exists():
         address = AddressUserRelationship.objects.get(alias=address).address.pk
 
@@ -95,12 +96,22 @@ def save_address_to_folder(request):
 def show_folder(request, folder_id):
     folder = Folder.objects.get(user=request.user, pk=folder_id)
     addresses = folder.addresses.all()
-    return render(request, 'etherscan_app/show_folder.html', {'folder': folder, 'addresses': addresses})
+
+    address_user_instances = []
+    for address in addresses:
+        address_user_instance = AddressUserRelationship.objects.get(user=request.user, address=address)
+        address_user_instances.append(address_user_instance)
+            
+    return render(request, 'etherscan_app/show_folder.html', {'folder': folder, 'address_user_instances': address_user_instances})
 
 @login_required(login_url='/login')
 def show_transactions(request, address):
-    address = Address.objects.get(address=address)
-    transactions = address.transactions.all()
+    user = request.user
+    if AddressUserRelationship.objects.filter(user=user, alias=address).exists():
+        address_instance = AddressUserRelationship.objects.get(user=request.user, alias=address).address
+    else: 
+        address_instance = Address.objects.get(users=user, address=address)
+    transactions = address_instance.transactions.all()
     return render(request, 'etherscan_app/show_transactions.html', {'address': address, 'transactions': transactions})
 
 @login_required(login_url='/login')
