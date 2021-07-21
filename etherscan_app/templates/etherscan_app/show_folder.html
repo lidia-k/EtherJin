@@ -11,7 +11,7 @@
             {% if x.alias %}
                 <li><a href="{% url 'etherscan_app:show-transactions' x.alias %}">{{ x.alias }}</a></li>
             {% else %}
-                <li><a href="{% url 'etherscan_app:show-transactions' x.address %}">{{ x.address }}</a></li>
+                <li><a href="{% url 'etherscan_app:show-transactions' x.address %}">{{ x.address.pk }}</a></li>
             {% endif %}    
         {% endfor %}
     </ul>
