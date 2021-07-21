@@ -127,7 +127,7 @@ def create_folder(request):
         if address:
             address = Address.objects.get(users=user, address=address)
             address.folders.add(folder)
-        return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':folder}))
+        return redirect(reverse('etherscan_app:show-folder', kwargs={'folder_id':folder.pk}))
 
 @login_required(login_url='/login')
 def show_folders(request):
