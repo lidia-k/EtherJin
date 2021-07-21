@@ -110,7 +110,7 @@ def show_transactions(request, address):
     if AddressUserRelationship.objects.filter(user=user, alias=address).exists():
         address_instance = AddressUserRelationship.objects.get(user=request.user, alias=address).address
     else: 
-        address_instance = Address.objects.get(users=user, address=address)
+        address_instance = Address.objects.get(users=user, pk=address)
     transactions = address_instance.transactions.all()
     return render(request, 'etherscan_app/show_transactions.html', {'address': address, 'transactions': transactions})
 
