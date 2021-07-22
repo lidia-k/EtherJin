@@ -82,11 +82,14 @@ WSGI_APPLICATION = 'etherscan_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'NAME': os.getenv("POSTGRES_DB"),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_ROOT_PASSWORD"),
+        'HOST': 'db',
+        'POST': 5432,
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
