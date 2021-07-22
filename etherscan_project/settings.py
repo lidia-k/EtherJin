@@ -91,6 +91,16 @@ DATABASES = {
     },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        }
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -147,3 +157,19 @@ SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET=os.environ.get('SOCIAL_AUTH_LINKEDIN_OAUTH2_S
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/login'
 ETHERSCAN_API_TOKEN=os.environ.get('ETHERSCAN_API_TOKEN')
 SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE = ['r_liteprofile', 'r_emailaddress']
+
+Q_CLUSTER = {
+    'name': 'etherjin_q',
+    'workers': 8,
+    'recycle': 500,
+    'timeout': 60,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'cpu_affinity': 1,
+    'label': 'Django Q',
+    'redis': {
+        'host': 'redis',
+        'port': 6379,
+        'db': 0, }
+}
