@@ -50,18 +50,14 @@ class ValidateAddressTests(TestCase):
         self.assertFalse(valid_address)
         self.assertEqual(response_data['result'], "Error! Invalid address format")
 
-@patch('etherscan_app.utils.requests.get')
+@patch('etherscan_app.views.validate_address')
 class SubmitAddressTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('etherscan_app:submit-address')
-        self.address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
-        self.address_instance = Address.objects.create(address=self.address)
-        self.res = Mock(spec = Response)
         self.user_instance = User.objects.create(username='testuser')
     
-    @patch('etherscan_app.views.async_task')
-    def test_submit_address_with_valid_address(self, async_task_patch, request_patch):
+    def test_submit_address_with_valid_address(self, validate_address_patch):
         """
         Tests submit_address successfully creates an address instance with a valid address 
         """
@@ -70,15 +66,14 @@ class SubmitAddressTests(TestCase):
             "message":"OK",
             "result":"result data"
         }
-        self.res.json.return_value = patched_data
-        request_patch.return_value = self.res
+        validate_address_patch.return_value = True, patched_data
 
-        new_address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
+        address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
         self.client.force_login(self.user_instance)
-        self.client.post(self.url, {'address': new_address})
-        self.assertEqual(Address.objects.latest('created_at').address, new_address)
+        self.client.post(self.url, {'address': address})
+        self.assertEqual(Address.objects.latest('created_at').address, address)
 
-    def test_submit_address_with_invalid_address(self, request_patch):
+    def test_submit_address_with_invalid_address(self, validate_address_patch):
         """
         Tests submit_address throws 400 error when taking in an invalid address
         """
@@ -87,30 +82,28 @@ class SubmitAddressTests(TestCase):
             "message":"NOTOK",
             "result":"Error! Invalid address format"
             }
-        self.res.json.return_value = patched_data
-        request_patch.return_value = self.res
+        validate_address_patch.return_value = False, patched_data
         
         address = '1234567890aaazzz'
-
         self.client.force_login(self.user_instance)
         response = self.client.post(self.url, {'address': address})
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.content.decode("utf-8"), patched_data['result'])
 
-    def test_submit_address_with_other_errors(self, request_patch):
+    def test_submit_address_with_other_errors(self, validate_address_patch):
         """
         Tests submit_address throws 400 error when receiving errors from the API
         """
+        address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
         patched_data = {
             "status":"1",
             "message":"OK-Missing/Invalid API Key, rate limit of 1/5sec applied",
             "result":"595623370144773018344492"}
-        self.res.json.return_value = patched_data
-        request_patch.return_value = self.res
+        validate_address_patch.return_value = False, patched_data
 
         self.client.force_login(self.user_instance)
-        response = self.client.post(self.url, {'address': self.address})
+        response = self.client.post(self.url, {'address': address})
 
         self.assertEqual(response.status_code, 400)
 
