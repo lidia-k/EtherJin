@@ -6,6 +6,7 @@ from etherscan_app.utils import validate_address
 
 @receiver([post_save], sender=Address)
 def create_transactions(sender, instance, created, using, update_fields, **kwargs):
+    import pdb; pdb.set_trace()
     pk = instance.pk
     _, response_data = validate_address(instance.pk)
-    async_task('etherscan_app.utils.create_transaction', pk, response_data['result'])
+    async_task('etherscan_app.utils.create_or_update_transaction', pk, response_data['result'])
