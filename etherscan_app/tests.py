@@ -7,7 +7,7 @@ from django.urls import reverse
 from requests.models import Response
 
 from etherscan_app.models import Address, Folder, Transaction
-from etherscan_app.utils import create_transaction, validate_address
+from etherscan_app.utils import create_or_update_transaction, validate_address
 
 
 @patch('etherscan_app.utils.requests.get')
@@ -135,11 +135,11 @@ class CreateTransactionTests(TestCase):
         Creates transaction instances of the given address
         """
         result_data = self.response_data['result']
-        create_transaction(self.address_instance.pk, result_data)
+        create_or_update_transaction(self.address_instance.pk, result_data)
         transactions = Transaction.objects.filter(address=self.address_instance)
         self.assertTrue(transactions)
 
-    def test_create_transaction_with_existing_address(self):
+    def test_update_transaction_with_existing_address(self):
         """
         Takes in an existing address
         Updates the transaction table with the new data 
@@ -162,7 +162,7 @@ class CreateTransactionTests(TestCase):
         }
         self.transaction_data.append(new_data)
         result_data = self.response_data['result']
-        create_transaction(self.address_instance.pk, result_data)
+        create_or_update_transaction(self.address_instance.pk, result_data)
        
         self.assertTrue(transaction_count < Transaction.objects.filter(address=self.address_instance).count())
 
@@ -263,3 +263,17 @@ class FolderRelatedTests(TestCase):
 
     def test_delete_list(self):
         pass
+
+@patch('etherscan_app.signals.validate_address')
+class AddressSignalsTest(TestCase):
+    def test_create_transactions_with_saved_address(self, function_patch):
+        response_data = {
+            "status":"1",
+            "message":"OK",
+            "result": "result"
+        }
+        function_patch.return_value = True, response_data
+        address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
+        Address.objects.create(address=address)
+
+        self.assertTrue(function_patch.called)
