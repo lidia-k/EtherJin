@@ -25,7 +25,7 @@ def validate_address(address):
     
     return valid_address, response_data
 
-def create_transaction(pk, result_data):
+def create_or_update_transaction(pk, result_data):
     """
     Takes in a valid address
     Populates transaction data of the address 
