@@ -3,8 +3,6 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from django_q.tasks import async_task
-
 from etherscan_app.forms import (AddressSearchForm, FolderCreationFrom,
                                  FolderRenameForm, FolderSelectionForm, 
                                  AliasCreationForm)
@@ -36,9 +34,8 @@ def submit_address(request):
 
     if valid_address:
         address_instance, _ = Address.objects.get_or_create(address=address)
-        AddressUserRelationship.objects.create(user=user, address=address_instance, alias=None)
+        AddressUserRelationship.objects.get_or_create(user=user, address=address_instance)
         pk = address_instance.pk
-        async_task('etherscan_app.utils.create_transaction', pk, result_data)
         return redirect(reverse('etherscan_app:results', kwargs={'address': pk}))
     elif result_data == 'Error! Invalid address format':
         return HttpResponse(f"{result_data}", status=400)
@@ -59,7 +56,6 @@ def show_results(request, address):
 def save_address_alias(request):
     alias = request.POST.get('alias')
     address = request.POST.get('address')
-
     address_user_instance = AddressUserRelationship.objects.get(user=request.user, address=address)
     address_user_instance.alias = alias
     address_user_instance.save()
