@@ -4,15 +4,17 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    expose:
-      - 8000
-    command: gunicorn --bind 0.0.0.0:8000 etherscan_project.wsgi:application
+    ports:
+      - 8000:8000
+    #command: gunicorn --bind 0.0.0.0:8000 etherscan_project.wsgi:application
     env_file: .env
     volumes:
-      - app-files:/srv/app
+      - $PWD:/srv/app/:delegated
     depends_on:
       - redis
       - db
+    stdin_open: true
+    tty: true
 
   django-q:
     build:
@@ -27,7 +29,7 @@ services:
 
     env_file: .env
     volumes:
-      - app-files:/srv/app
+      - $PWD:/srv/app/:delegated
     depends_on:
       - redis
       - db
@@ -60,7 +62,7 @@ services:
       - redis
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
-      - app-files:/srv/app
+      - $PWD:/srv/app/:delegated
 
 volumes:
   app-files:
