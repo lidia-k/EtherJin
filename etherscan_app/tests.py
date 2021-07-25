@@ -57,7 +57,8 @@ class SubmitAddressTests(TestCase):
         self.url = reverse('etherscan_app:submit-address')
         self.user_instance = User.objects.create(username='testuser')
     
-    def test_submit_address_with_valid_address(self, validate_address_patch):
+    @patch('etherscan_app.signals.validate_address')
+    def test_submit_address_with_valid_address(self, validate_address_patch, signal_function_patch):
         """
         Tests submit_address successfully creates an address instance with a valid address 
         """
@@ -67,6 +68,7 @@ class SubmitAddressTests(TestCase):
             "result":"result data"
         }
         validate_address_patch.return_value = True, patched_data
+        signal_function_patch.return_value = True, patched_data
 
         address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
         self.client.force_login(self.user_instance)
