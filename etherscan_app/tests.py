@@ -109,9 +109,10 @@ class SubmitAddressTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
-@patch('etherscan_app.signals.validate_address')
 class CreateTransactionTests(TestCase):
     def setUp(self):
+        signals.post_save.receivers = []
+        self.address_instance = Address.objects.create(address="0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF")
         self.transaction_data = [{
             "hash": "0xmyhash",
             "from": "0xfromaccount",
@@ -124,14 +125,11 @@ class CreateTransactionTests(TestCase):
             "result": self.transaction_data
         }
         
-    def test_create_transaction_with_new_address(self, signal_function_patch):
+    def test_create_transaction_with_new_address(self):
         """
         Takes in a new valid address
         Creates transaction instances of the given address
         """
-        signal_function_patch.return_value = True, self.response_data
-        self.address_instance = Address.objects.create(address="0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF")
-
         result_data = self.response_data['result']
         create_or_update_transaction(self.address_instance.pk, result_data)
         transactions = Transaction.objects.filter(address=self.address_instance)
