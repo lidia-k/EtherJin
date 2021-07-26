@@ -166,16 +166,18 @@ class ResultsViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user_instance = User.objects.create(username='testuser')
+        signals.post_save.receivers = []
 
-    def test_results_view_with_valid_address(self, async_task_patch, validate_address_patch):    
+    def test_results_view_with_valid_address(self):    
         """
         Takes in a valid address
         Renders 'results.html' template with the address as context
         """
-        self.client.force_login(self.user_instance)
         address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
         Address.objects.create(address=address)
+
         url = reverse('etherscan_app:results', kwargs={'address': address})
+        self.client.force_login(self.user_instance)
         res = self.client.get(url)
         context_address = res.context.get('address')
        
