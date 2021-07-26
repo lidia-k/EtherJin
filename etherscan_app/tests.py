@@ -7,7 +7,7 @@ from django.db.models import signals
 
 from requests.models import Response
 
-from etherscan_app.models import Address, Folder, Transaction
+from etherscan_app.models import Address, Folder, Transaction, AddressUserRelationship
 from etherscan_app.utils import create_or_update_transaction, validate_address
 
 
@@ -69,11 +69,14 @@ class SubmitAddressTests(TestCase):
             "result":"result data"
         }
         validate_address_patch.return_value = True, patched_data
-
         address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
+        
         self.client.force_login(self.user_instance)
         self.client.post(self.url, {'address': address})
+        address_instance = Address.objects.get(address=address)
+
         self.assertEqual(Address.objects.latest('created_at').address, address)
+        self.assertTrue(AddressUserRelationship.objects.filter(user=self.user_instance, address=address_instance))
 
     def test_submit_address_with_invalid_address(self, validate_address_patch):
         """
@@ -182,69 +185,66 @@ class ResultsViewTests(TestCase):
         context_address = res.context.get('address')
        
         self.assertEqual(context_address, Address.objects.last().pk)
-class UserAddressesViewTests(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.url = reverse('etherscan_app:user_addresses')
-        self.user_instance = User.objects.create(username='testuser')
-
-    def test_show_user_addresses_view_with_addresses(self):
-        addresses = [
-            '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF', 
-            '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca',]
-        
-        for address in addresses:
-            address_instance = Address.objects.create(address=address)
-            address_instance.users.add(self.user_instance)
-
-        self.client.force_login(self.user_instance)
-        res = self.client.get(self.url)
-        
-        context_addresses = [x.address for x in res.context.get('addresses')]
-        self.assertEqual(context_addresses, [x.address for x in self.user_instance.addresses.all()])
-
-    def test_show_user_address_view_without_addresses(self):
-        self.client.force_login(self.user_instance)
-        res = self.client.get(self.url)
-        self.assertEqual(res.status_code, 404)
-
 class FolderRelatedTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create(username='testuser')
-        self.lists = ['test1', 'test2', 'test3']
+ 
+        signals.post_save.receivers = []
+        self.address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
+        self.address_instance = Address.objects.create(address=self.address)
+        self.address_instance.users.add(self.user)
+
+        self.folder_name = 'test_folder'
+        self.folders = ['test1', 'test2', 'test3']
 
     def test_save_address_to_folder(self):
-        address = '0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF'
-        address_instance = Address.objects.create(address=address)
-        address_instance.users.add(self.user)
-        folder_name = 'test_folder'
-        folder = Folder.objects.create(user=self.user, folder_name=folder_name)
+        folder = Folder.objects.create(user=self.user, folder_name=self.folder_name)
 
         url = reverse('etherscan_app:save-address-to-folder')
         self.client.force_login(self.user)
-        self.client.post(url, {'address': address, 'folder': folder_name})
+        self.client.post(url, {'address': self.address, 'folder': folder.pk})
         
-        self.assertTrue(folder.addresses.get(address=address))
+        self.assertTrue(folder.addresses.get(address=self.address))
 
-    def test_create_list(self):
+    def test_create_folder_without_saved_address(self):
+        url = reverse('etherscan_app:create-folder')
+        
         self.client.force_login(self.user)
-        url = reverse('etherscan_app:create_list')
-        list_name = 'test_list'
-        self.client.post(url, {'list_name': list_name})
-        self.assertEqual(list_name, Folder.objects.last().folder)
+        self.client.post(url, {'folder': self.folder_name})
 
-    def test_retrieve_lists(self):
-        for list in self.lists: 
-            Folder.objects.create(user=self.user, folder=list)
+        self.assertEqual(self.folder_name, Folder.objects.last().folder_name)
 
-        url = reverse('etherscan_app:show_lists')
+    def test_create_folder_with_saved_address(self):
+        url = reverse('etherscan_app:create-folder')
+        self.client.force_login(self.user)
+        self.client.post(url, {'folder': self.folder_name, 'address': self.address})
+        self.assertEqual(Folder.objects.last().addresses.get().address, self.address) 
+
+    def test_show_folders(self):
+        for folder in self.folders: 
+            Folder.objects.create(user=self.user, folder_name=folder)
+
+        url = reverse('etherscan_app:show-folders')
         self.client.force_login(self.user)
         res = self.client.get(url)
-        context_lists = [x.folder for x in res.context.get('lists')]
-        self.assertEqual(context_lists, [x.folder for x in self.user.folders.all()])
+        context_lists = [x.folder_name for x in res.context.get('folders')]
+        self.assertEqual(context_lists, [x.folder_name for x in self.user.folders.all()])
+    
+    def test_show_folder(self):
+        folder = Folder.objects.create(user=self.user, folder_name=self.folder_name)
+        self.address_instance.folders.add(folder)
 
-    def test_update_list(self):
+        url = reverse('etherscan_app:show-folder', kwargs={'folder_id': folder.pk})
+        self.client.force_login(self.user)
+        res = self.client.get(url)
+
+        self.assertEqual(res.context.get('folder'), folder)
+        self.assertEqual(
+            res.context.get('address_user_instances')[0], 
+            AddressUserRelationship.objects.get(user=self.user, address=self.address_instance))
+
+    def test_update_lisst(self):
         pass
         """
         for list in self.lists: 
