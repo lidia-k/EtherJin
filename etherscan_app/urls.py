@@ -16,6 +16,6 @@ urlpatterns = [
     path('<str:address>/transactions', views.show_transactions, name='show-transactions'),
     path('create-folder', views.create_folder, name='create-folder'),
     path('view-folders', views.show_folders, name="show-folders"),
-    path('<str:folder>/edit', views.edit_folder_name, name="edit-folder-name"),
-    path('<str:folder>/delete', views.delete_folder, name="delete-folder"),
+    path('<str:folder_id>/edit', views.edit_folder_name, name="edit-folder-name"),
+    path('<str:folder_id>/delete', views.delete_folder, name="delete-folder"),
 ]

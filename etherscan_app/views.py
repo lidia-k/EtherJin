@@ -132,16 +132,16 @@ def show_folders(request):
     return render(request, 'etherscan_app/show_folders.html', {'folders': folders})
 
 @login_required(login_url='/login')
-def edit_folder_name(request, folder):
+def edit_folder_name(request, folder_id):
+    folder = Folder.objects.get(pk=folder_id)
     if request.method == "GET":
         form = FolderRenameForm()
         return render(request, 'etherscan_app/edit_folder_name.html', {'folder': folder, 'form': form})
     else:
         new_name = request.POST.get('folder_name')
-        folder = Folder.objects.get(user=request.user, folder_name=folder)
         folder.folder_name = new_name
         folder.save()
-        return redirect(reverse('etherscan_app:show-folder', kwargs={'folder':new_name}))
+        return redirect(reverse('etherscan_app:show-folder', kwargs={'folder_id':folder_id}))
 
 @login_required(login_url='/login')
 def delete_folder(request, folder):
