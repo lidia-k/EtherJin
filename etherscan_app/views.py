@@ -144,7 +144,7 @@ def edit_folder_name(request, folder_id):
         return redirect(reverse('etherscan_app:show-folder', kwargs={'folder_id':folder_id}))
 
 @login_required(login_url='/login')
-def delete_folder(request, folder):
-    folder = Folder.objects.get(user=request.user, folder_name=folder)
+def delete_folder(request, folder_id):
+    folder = Folder.objects.get(user=request.user, pk=folder_id)
     folder.delete()
     return redirect(reverse('etherscan_app:show-folders'))

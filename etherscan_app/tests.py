@@ -255,7 +255,15 @@ class FolderRelatedTests(TestCase):
         self.assertEqual(Folder.objects.get(pk=folder.pk).folder_name, new_name)
        
     def test_delete_list(self):
-        pass
+        for folder in self.folders: 
+            Folder.objects.create(user=self.user, folder_name=folder)
+
+        url = reverse('etherscan_app:delete-folder', kwargs={'folder_id': 1})
+
+        self.client.force_login(self.user)
+        self.client.get(url)
+
+        self.assertEqual(Folder.objects.all().count(), 2)
 
 @patch('etherscan_app.signals.validate_address')
 class AddressSignalsTest(TestCase):
