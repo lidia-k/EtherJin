@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.db.models import signals
 
 from requests.models import Response
 
@@ -56,9 +57,9 @@ class SubmitAddressTests(TestCase):
         self.client = Client()
         self.url = reverse('etherscan_app:submit-address')
         self.user_instance = User.objects.create(username='testuser')
+        signals.post_save.receivers = []
     
-    @patch('etherscan_app.signals.validate_address')
-    def test_submit_address_with_valid_address(self, validate_address_patch, signal_function_patch):
+    def test_submit_address_with_valid_address(self, validate_address_patch):
         """
         Tests submit_address successfully creates an address instance with a valid address 
         """
@@ -68,7 +69,6 @@ class SubmitAddressTests(TestCase):
             "result":"result data"
         }
         validate_address_patch.return_value = True, patched_data
-        signal_function_patch.return_value = True, patched_data
 
         address = '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca'
         self.client.force_login(self.user_instance)
@@ -109,9 +109,9 @@ class SubmitAddressTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
+@patch('etherscan_app.signals.validate_address')
 class CreateTransactionTests(TestCase):
     def setUp(self):
-        self.address_instance = Address.objects.create(address="0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF")
         self.transaction_data = [{
             "hash": "0xmyhash",
             "from": "0xfromaccount",
@@ -124,11 +124,14 @@ class CreateTransactionTests(TestCase):
             "result": self.transaction_data
         }
         
-    def test_create_transaction_with_new_address(self):
+    def test_create_transaction_with_new_address(self, signal_function_patch):
         """
         Takes in a new valid address
         Creates transaction instances of the given address
         """
+        signal_function_patch.return_value = True, self.response_data
+        self.address_instance = Address.objects.create(address="0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF")
+
         result_data = self.response_data['result']
         create_or_update_transaction(self.address_instance.pk, result_data)
         transactions = Transaction.objects.filter(address=self.address_instance)
