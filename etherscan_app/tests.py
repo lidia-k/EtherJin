@@ -244,21 +244,16 @@ class FolderRelatedTests(TestCase):
             res.context.get('address_user_instances')[0], 
             AddressUserRelationship.objects.get(user=self.user, address=self.address_instance))
 
-    def test_update_lisst(self):
-        pass
-        """
-        for list in self.lists: 
-            Folder.objects.create(user=self.user, folder=list)
-
-        updated_lists = {'test1', 'test2', ''}
+    def test_edit_folder_name(self):
+        folder = Folder.objects.create(user=self.user, folder_name=self.folder_name)
+        url = reverse('etherscan_app:edit-folder-name', kwargs={'folder_id': folder.pk})
+        new_name = 'new_name'
 
         self.client.force_login(self.user)
-        url = reverse('etherscan_app:update_list')
-        list = self.client.get(url, {'list': })
+        self.client.post(url, {'folder_name': new_name})
 
-        self.client.post(url, {'list': ''})
-        """
-
+        self.assertEqual(Folder.objects.get(pk=folder.pk).folder_name, new_name)
+       
     def test_delete_list(self):
         pass
 
