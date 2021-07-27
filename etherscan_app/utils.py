@@ -7,7 +7,7 @@ from etherscan_app.models import Address, Transaction
 
 
 @ratelimiter.RateLimiter(max_calls=5, period=1)
-def validate_address(address):
+def get_address_response(address):
     """
     Takes in an address
     Returns:

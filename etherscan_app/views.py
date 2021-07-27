@@ -7,7 +7,7 @@ from etherscan_app.forms import (AddressSearchForm, FolderCreationFrom,
                                  FolderRenameForm, FolderSelectionForm, 
                                  AliasCreationForm)
 from etherscan_app.models import Address, Folder, AddressUserRelationship
-from etherscan_app.utils import validate_address
+from etherscan_app.utils import get_address_response
 
 
 @login_required(login_url='/login')
@@ -23,7 +23,7 @@ def search(request):
 def submit_address(request):
     #TODO make it faster to show the results 
     address = request.POST.get('address')
-    valid_address, response_data = validate_address(address)
+    valid_address, response_data = get_address_response(address)
     if not valid_address and not response_data:
         # no api token
         print("Please provide api_token.")
