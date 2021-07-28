@@ -4,10 +4,15 @@
 {{ folder.folder_name }}
 {% endblock %}
 {% block content %}
-{% if addresses %}
+
+{% if address_user_instances %}
     <ul>
-        {% for x in addresses %}
-            <li><a href="{% url 'etherscan_app:show-transactions' x.address %}">{{ x.address }}</a></li>
+        {% for x in address_user_instances %}
+            {% if x.alias %}
+                <li><a href="{% url 'etherscan_app:show-transactions' x.alias %}">{{ x.alias }}</a></li>
+            {% else %}
+                <li><a href="{% url 'etherscan_app:show-transactions' x.address.pk %}">{{ x.address.pk }}</a></li>
+            {% endif %}    
         {% endfor %}
     </ul>
 {% else %}

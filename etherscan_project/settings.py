@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=c2rmengp8y3+p#o#9f1@xsfyf97@6)75xb4r2s%db*q18*l*l'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 
 # Application definition
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django_q',
     'django_social_app',
     'social_django',
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,11 +83,24 @@ WSGI_APPLICATION = 'etherscan_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'NAME': os.getenv("POSTGRES_DB"),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_ROOT_PASSWORD"),
+        'HOST': 'db',
+        'POST': 5432,
+    },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -144,3 +158,23 @@ SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET=os.environ.get('SOCIAL_AUTH_LINKEDIN_OAUTH2_S
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/login'
 ETHERSCAN_API_TOKEN=os.environ.get('ETHERSCAN_API_TOKEN')
 SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE = ['r_liteprofile', 'r_emailaddress']
+
+Q_CLUSTER = {
+    'name': 'etherjin_q',
+    'workers': 8,
+    'recycle': 500,
+    'timeout': 60,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'cpu_affinity': 1,
+    'label': 'Django Q',
+    'redis': {
+        'host': 'redis',
+        'port': 6379,
+        'db': 0, }
+}
+
+CRONJOBS = [
+    ('* * * * *', 'etherscan_app.cron.update_transactions')
+]
