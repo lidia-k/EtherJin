@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=c2rmengp8y3+p#o#9f1@xsfyf97@6)75xb4r2s%db*q18*l*l'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django_q',
     'django_social_app',
     'social_django',
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -173,3 +174,7 @@ Q_CLUSTER = {
         'port': 6379,
         'db': 0, }
 }
+
+CRONJOBS = [
+    ('* * * * *', 'etherscan_app.cron.update_transactions')
+]
