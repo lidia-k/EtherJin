@@ -8,8 +8,8 @@ from django.db.models import signals
 from requests.models import Response
 
 from etherscan_app.models import Address, Folder, Transaction, AddressUserRelationship
-from etherscan_app.utils import create_or_update_transaction, validate_address
-
+from etherscan_app.utils import create_or_update_transaction, get_address_response
+from etherscan_app.cron import update_transactions
 
 @patch('etherscan_app.utils.requests.get')
 class ValidateAddressTests(TestCase):
@@ -278,3 +278,21 @@ class AddressSignalsTest(TestCase):
         Address.objects.create(address=address)
 
         self.assertTrue(function_patch.called)
+
+class CronJobFunctionTest(TestCase):
+    @patch('etherscan_app.cron.create_or_update_transaction')
+    @patch('etherscan_app.cron.get_address_response')
+    def test_update_transactions(self, get_address_response_patch, create_or_update_transaction_patch):
+        signals.post_save.receivers = []
+        
+        addresses = ['0xD4fa6E82c77716FA1EF7f5dEFc5Fd6eeeFBD3bfF', '0x8d7c9AE01050a31972ADAaFaE1A4D682F0f5a5Ca']
+        for address in addresses:
+            Address.objects.create(address=address)
+        get_address_response_patch.return_value = True, {
+            "status":"1",
+            "message":"OK",
+            "result": "result"
+        }
+        update_transactions()
+
+        self.assertTrue(get_address_response_patch.called)
