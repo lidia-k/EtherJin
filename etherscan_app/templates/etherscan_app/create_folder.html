@@ -1,8 +1,10 @@
 {% extends 'etherscan_app/base.html' %}
+{% load crispy_forms_tags %}
+
 {% block content %}
 <form action="{% url 'etherscan_app:create-folder' %}" method="post">
     {% csrf_token %}
-    {{ folder_creation_form }}
+    {% crispy folder_creation_form %}
     <input type="submit" value="Create">
 </form>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'etherscan_app/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content%}
 <h4>The transaction data of {{ address }}' is successfully saved.</h4><br>
@@ -10,7 +11,7 @@ TODO a user can update or remove alias-->
 <p>Create an alias for the address. If you don't want to create an alias, please leave it empty.</p>
 <form action="{% url 'etherscan_app:save-alias' %}" method="post">
     {% csrf_token %}
-    {{ alias_creation_form }}
+    {% crispy alias_creation_form %}
     <input type="hidden" name="address" value="{{ address }}">
     <input type="submit" value="Create">
 </form>

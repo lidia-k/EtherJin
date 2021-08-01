@@ -70,7 +70,7 @@ def create_or_select_folder(request, address):
         address = AddressUserRelationship.objects.get(user=user, alias=address).address.pk
 
     folder_selection_form = FolderSelectionForm(request.user.folders.all())
-    folder_creation_form = FolderCreationFrom()
+    folder_creation_form = FolderCreationFrom(submit_text='Create and Save')
     context = {
         'address': address, 
         'folder_selection_form': folder_selection_form,

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -158,6 +159,8 @@ SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET=os.environ.get('SOCIAL_AUTH_LINKEDIN_OAUTH2_S
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/login'
 ETHERSCAN_API_TOKEN=os.environ.get('ETHERSCAN_API_TOKEN')
 SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE = ['r_liteprofile', 'r_emailaddress']
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 Q_CLUSTER = {
     'name': 'etherjin_q',
