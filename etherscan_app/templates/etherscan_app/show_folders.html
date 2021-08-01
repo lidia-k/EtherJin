@@ -10,7 +10,7 @@
                 <a href="{% url 'etherscan_app:show-folder' x.pk %}">{{ x.folder_name }}</a>
                 <input type='submit' formaction="{% url 'etherscan_app:edit-folder-name' x.pk %}" formmethod="get" value="Edit">
                 <input type='submit' formaction="{% url 'etherscan_app:delete-folder' x.pk %}" formmethod="post" value="Delete" onclick="myFunction()">
-            </li>ß
+            </li>
         </ul>
     {% endfor %}
 {% else %}
