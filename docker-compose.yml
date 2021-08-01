@@ -1,0 +1,72 @@
+version: '3'
+services:
+  django:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - 8000:8000
+    #command: gunicorn --bind 0.0.0.0:8000 etherscan_project.wsgi:application
+    env_file: .env
+    volumes:
+      - $PWD:/srv/app/:delegated
+    depends_on:
+      - redis
+      - db
+    stdin_open: true
+    tty: true
+
+  django-q:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    expose:
+      - 8000
+    command: >
+      sh -c "python manage.py makemigrations && 
+             python manage.py migrate &&
+             python manage.py qcluster"
+
+    env_file: .env
+    volumes:
+      - $PWD:/srv/app/:delegated
+    depends_on:
+      - redis
+      - db
+
+  db:
+    image: postgres:latest
+    expose:
+      - 5432
+    env_file: .env
+    volumes:
+      - ./docker/volumes/postgres:/var/lib/postgres/data
+
+  redis:
+    image: redis:latest
+    expose: 
+      - 6379
+    ports: 
+      - 6379:6379
+    volumes: 
+      - ./docker/volumes/data:/var/lib/redis
+    
+  nginx:
+    container_name: nginx
+    image: nginx:1.13
+    ports:
+      - 80:80
+    depends_on:
+      - db
+      - django
+      - redis
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+      - $PWD:/srv/app/:delegated
+
+volumes:
+  app-files:
+    driver_opts:
+      type: nfs
+      device: $PWD
+      o: bind

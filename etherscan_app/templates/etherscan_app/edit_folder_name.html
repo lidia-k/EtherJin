@@ -2,9 +2,9 @@
 {% load crispy_forms_tags %}
 
 {% block content%}
-<h3>Rename "{{ folder }}"</h3>
-<form action="{% url 'etherscan_app:edit-folder-name' folder %}" method="post">
+<h3>Rename "{{ folder.folder_name }}"</h3>
+<form action="{% url 'etherscan_app:edit-folder-name' folder.pk %}" method="post">
     {% csrf_token %}
-    {% crispy form %}
+    {% crispy form %}  
 </form>
 {% endblock%}
