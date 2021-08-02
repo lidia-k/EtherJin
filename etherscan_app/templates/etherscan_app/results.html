@@ -13,7 +13,6 @@ TODO a user can update or remove alias-->
     {% csrf_token %}
     {% crispy alias_creation_form %}
     <input type="hidden" name="address" value="{{ address }}">
-    <input type="submit" value="Create">
 </form>
 
 <br></vr><a href="{% url 'etherscan_app:create-or-select-folder' address %}">Continue to create or select a folder.</a>

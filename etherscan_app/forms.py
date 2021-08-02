@@ -7,7 +7,7 @@ class AddressSearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(AddressSearchForm, self).__init__(*args, **kwargs)
-        self.fields['address'].widget.attrs.update(style='max-width: 25%')
+        self.fields['address'].widget.attrs.update(style='max-width: 50%')
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Submit', css_class='btn-primary'))
@@ -55,3 +55,10 @@ class FolderRenameForm(forms.Form):
 class AliasCreationForm(forms.Form):
     alias = forms.CharField(label='Alias', max_length=20)
 
+    def __init__(self, *args, **kwargs):
+        super(AliasCreationForm, self).__init__(*args, **kwargs)
+        self.fields['alias'].widget.attrs.update(style='max-width: 25%')
+
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', 'Submit', css_class='btn-primary'))
+        self.helper.form_method = 'POST'
