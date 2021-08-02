@@ -13,6 +13,7 @@ services:
     depends_on:
       - redis
       - db
+      - es
     stdin_open: true
     tty: true
 
@@ -34,6 +35,7 @@ services:
       - redis
       - db
       - django
+      - es
 
   db:
     image: postgres:latest
@@ -64,6 +66,23 @@ services:
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
       - $PWD:/srv/app/:delegated
+    
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
+    ports: 
+      - 9200:9200
+      - 9300:9300
+    expose:
+      - 9200
+      - 9300
+    environment: 
+      - discovery.type=single-node 
+    ulimits: 
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./docker/volumes/es:/usr/share/elasticsearch/data 
 
 volumes:
   app-files:
