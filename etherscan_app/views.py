@@ -45,7 +45,7 @@ def submit_address(request):
 @login_required(login_url='/login')
 def show_results(request, address):
     address = Address.objects.get(address=address)
-    alias_creation_form = AliasCreationForm()
+    alias_creation_form = AliasCreationForm(address=address.address)
     context = {
         'address': address.pk, 
         'alias_creation_form': alias_creation_form,
@@ -54,13 +54,14 @@ def show_results(request, address):
 
 @login_required(login_url='/login')
 def save_address_alias(request):
-    alias = request.POST.get('alias')
+    print(request.POST.get('alias'))
+    alias_name = request.POST.get('alias')
     address = request.POST.get('address')
     address_user_instance = AddressUserRelationship.objects.get(user=request.user, address=address)
-    address_user_instance.alias = alias
+    address_user_instance.alias = alias_name
     address_user_instance.save()
 
-    address = alias
+    address = alias_name
     return redirect(reverse('etherscan_app:create-or-select-folder', kwargs={'address': address}))
 
 @login_required(login_url='/login')
