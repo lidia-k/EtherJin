@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django_q',
     'django_social_app',
     'social_django',
-    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -178,10 +177,6 @@ Q_CLUSTER = {
         'port': 6379,
         'db': 0, }
 }
-
-CRONJOBS = [
-    ('* * * * *', 'etherscan_app.cron.update_transactions')
-]
 
 ELASTICSEARCH_INDEX = 'etherjin'
 ELASTICSEARCH_URL = os.getenv('ELASTICSEARCH_URL')
