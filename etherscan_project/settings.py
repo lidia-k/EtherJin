@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+from elasticsearch_dsl import connections
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -181,3 +182,8 @@ Q_CLUSTER = {
 CRONJOBS = [
     ('* * * * *', 'etherscan_app.cron.update_transactions')
 ]
+
+ELASTICSEARCH_INDEX = 'etherjin'
+ELASTICSEARCH_URL = os.getenv('ELASTICSEARCH_URL')
+if ELASTICSEARCH_URL:
+    connections.create_connection(hosts=[ELASTICSEARCH_URL], timeout=30)
