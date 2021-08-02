@@ -54,11 +54,12 @@ class FolderRenameForm(forms.Form):
 
 class AliasCreationForm(forms.Form):
     alias = forms.CharField(label='Alias', max_length=20)
+    address = forms.CharField(max_length=60, widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
-        super(AliasCreationForm, self).__init__(*args, **kwargs)
+        super(AliasCreationForm, self).__init__(*args)
         self.fields['alias'].widget.attrs.update(style='max-width: 25%')
-
+        self.fields['address'].initial = kwargs.get('address')
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Submit', css_class='btn-primary'))
         self.helper.form_method = 'POST'
