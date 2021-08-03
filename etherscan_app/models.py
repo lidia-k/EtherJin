@@ -4,7 +4,6 @@ from django.db import models
 from elasticsearch_dsl import Q as ESQ
 
 class FolderQuerySet(models.QuerySet):
-
     def search(self, search_query):
         query = ESQ(
             'multi_match',
@@ -16,8 +15,7 @@ class FolderQuerySet(models.QuerySet):
         res = FolderDocument.search().query(query).execute()
         folder_ids = [hit.id for hit in res.hits]
         folders = self.filter(id__in=folder_ids)
-        return folders
-
+        
 class Folder(models.Model):
     user = models.ForeignKey(User, related_name='folders', on_delete=models.CASCADE)
     folder_name = models.CharField(max_length=50)
@@ -38,6 +36,7 @@ class Address(models.Model):
     address = models.CharField(max_length=50, unique=True, primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 class Transaction(models.Model):
     address = models.ForeignKey(Address, related_name='transactions', on_delete=models.CASCADE)
     hash = models.CharField(max_length=200, unique=True, primary_key=True)
