@@ -12,15 +12,15 @@ logger = logging.getLogger(__name__)
 def create_transactions(sender, instance, created, using, update_fields, **kwargs):
     pk = instance.pk
     _, response_data = get_address_response(instance.pk)
+    logger.info(f'Transaction data for {instance.address} is being saved')
     async_task('etherscan_app.utils.create_or_update_transaction', pk, response_data['result'])
 
 @receiver([post_save], sender=Folder)
 def folder_saved(sender, instance, created, using, update_fields, **kwargs):
-    logger.info(f'Folder {instance} is being added')
-    async_task('etherscan_app.indexes.update_folder_document', instance.id)
+    logger.info(f'Folder {instance} is being added to the index')
+    async_task('etherscan_app.indexes.update_folder_document', instance.pk)
 
 @receiver([post_delete], sender=Folder)
-def folder_saved(sender, instance, created, using, update_fields, **kwargs):
-    logger.info(f'Folder {instance} is being deleted')
-    async_task('etherscan_app.indexes.delete_folder_document', instance.id)
-
+def folder_deleted(sender, instance, using, **kwargs):
+    logger.info(f'Folder {instance} is being deleted from the index')
+    async_task('etherscan_app.indexes.delete_folder_document', instance.pk)
