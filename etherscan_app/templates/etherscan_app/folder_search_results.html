@@ -1,0 +1,16 @@
+{% extends 'etherscan_app/base.html' %}
+
+{% block content %}
+<form>
+    {% csrf_token %}
+    {% for x in folders %}
+        <ul>
+            <li>
+                <a href="{% url 'etherscan_app:show-folder' x.pk %}">{{ x.folder_name }}</a>
+            </li>
+        </ul>
+    {% endfor %}
+    </form>
+    
+    <a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>
+{% endblock %}
