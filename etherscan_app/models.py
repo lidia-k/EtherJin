@@ -1,23 +1,16 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from elasticsearch_dsl import Q as ESQ
-
 from etherscan_app.indexes import FolderDocument
 
 
 class FolderQuerySet(models.QuerySet):
     def search(self, search_query):
-        query = ESQ(
-            "multi_match",
-            query=search_query,
-            type="cross_fields",
-            fields=["folder_name"],
-        )
-
-        res = FolderDocument.search().query(query).execute()
+        search_query = f'*{search_query}*'
+        res = FolderDocument.search().query('wildcard', folder_name=search_query).execute()
         folder_ids = [hit.id for hit in res.hits]
         folders = self.filter(id__in=folder_ids)
+        return folders
 
 
 class Folder(models.Model):
