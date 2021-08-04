@@ -9,7 +9,6 @@ from etherscan_app.indexes import FolderDocument
 class Command(BaseCommand):
     def handle(self, *args, **options):
         index = Index(settings.ELASTICSEARCH_INDEX)
-        index.delete(ignore=404)
         index.document(FolderDocument)
         index.create()
         self.stdout.write(self.style.SUCCESS(f"{index} index successfully created!"))
