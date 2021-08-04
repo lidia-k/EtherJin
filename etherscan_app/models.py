@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from etherscan_app.indexes import FolderDocument, AddressDocument
+from etherscan_app.indexes import FolderDocument
 
 
 class FolderQuerySet(models.QuerySet):
@@ -29,15 +29,6 @@ class AddressUserRelationship(models.Model):
     alias = models.CharField(max_length=20, null=True, default=None, unique=True)
 
 
-class AddressQuerySet(models.QuerySet):
-    def search(self, search_query):
-        search_query = f'*{search_query}*'
-        res = AddressDocument.search().query('wildcard', name=search_query).execute()
-        address_ids = [hit.id for hit in res.hits]
-        addresses = self.filter(address__in=address_ids)
-        return addresses
-
-
 class Address(models.Model):
     users = models.ManyToManyField(
         User, related_name="addresses", through=AddressUserRelationship
@@ -46,8 +37,6 @@ class Address(models.Model):
     address = models.CharField(max_length=50, unique=True, primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    objects = AddressQuerySet.as_manager()
 
 
 class Transaction(models.Model):
