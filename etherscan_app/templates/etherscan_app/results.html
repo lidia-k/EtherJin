@@ -3,17 +3,9 @@
 
 {% block content%}
 <h4>The transaction data of {{ address }}' is successfully saved.</h4><br>
-
-<!--(Optional) Give the address alias
-TODO add a form to create and save alias for the address
-TODO when a user views the saved addresses, if there is alias, alias will show and otherwise, just a normal address
-TODO a user can update or remove alias-->
 <p>Create an alias for the address. If you don't want to create an alias, please leave it empty.</p>
 <form action="{% url 'etherscan_app:save-alias' %}" method="post">
-    {% csrf_token %}
     {% crispy alias_creation_form %}
-    <input type="hidden" name="address" value="{{ address }}">
-    <input type="submit" value="Create">
 </form>
 
 <br></vr><a href="{% url 'etherscan_app:create-or-select-folder' address %}">Continue to create or select a folder.</a>
