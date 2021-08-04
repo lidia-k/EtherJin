@@ -11,7 +11,7 @@ class FolderSelectionForm(forms.Form):
         super(FolderSelectionForm, self).__init__(*args, **kwargs)
         folder_choices = []
         for folder in folders:
-            folder_choice = (folder.id, folder.folder_name)
+            folder_choice = (folder.id, folder.name)
             folder_choices.append(folder_choice)
         self.fields["folder"].choices = folder_choices
         self.fields["folder"].widget.attrs.update(style="max-width: 25%")
@@ -35,11 +35,11 @@ class FolderCreationFrom(forms.Form):
 
 
 class FolderRenameForm(forms.Form):
-    folder_name = forms.CharField(label="New name", max_length=50)
+    name = forms.CharField(label="New name", max_length=50)
 
     def __init__(self, *args, **kwargs):
         super(FolderRenameForm, self).__init__(*args, **kwargs)
-        self.fields["folder_name"].widget.attrs.update(style="max-width: 25%")
+        self.fields["name"].widget.attrs.update(style="max-width: 25%")
 
         self.helper = FormHelper()
         self.helper.add_input(Submit("save", "Save", css_class="btn-primary"))

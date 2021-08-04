@@ -6,7 +6,7 @@
     {% for x in folders %}
         <ul>
             <li>
-                <a href="{% url 'etherscan_app:show-folder' x.pk %}">{{ x.folder_name }}</a>
+                <a href="{% url 'etherscan_app:show-folder' x.pk %}">{{ x.name }}</a>
             </li>
         </ul>
     {% endfor %}

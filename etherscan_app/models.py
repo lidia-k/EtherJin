@@ -7,7 +7,7 @@ from etherscan_app.indexes import FolderDocument
 class FolderQuerySet(models.QuerySet):
     def search(self, search_query):
         search_query = f'*{search_query}*'
-        res = FolderDocument.search().query('wildcard', folder_name=search_query).execute()
+        res = FolderDocument.search().query('wildcard', name=search_query).execute()
         folder_ids = [hit.id for hit in res.hits]
         folders = self.filter(id__in=folder_ids)
         return folders
@@ -15,12 +15,12 @@ class FolderQuerySet(models.QuerySet):
 
 class Folder(models.Model):
     user = models.ForeignKey(User, related_name="folders", on_delete=models.CASCADE)
-    folder_name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
 
     objects = FolderQuerySet.as_manager()
 
     def __str__(self):
-        return self.folder_name
+        return self.name
 
 
 class AddressUserRelationship(models.Model):

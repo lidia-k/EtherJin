@@ -209,11 +209,11 @@ class FolderRelatedTests(TestCase):
         self.address_instance = Address.objects.create(address=self.address)
         self.address_instance.users.add(self.user)
 
-        self.folder_name = "test_folder"
+        self.name = "test_folder"
         self.folders = ["test1", "test2", "test3"]
 
     def test_save_address_to_folder(self):
-        folder = Folder.objects.create(user=self.user, folder_name=self.folder_name)
+        folder = Folder.objects.create(user=self.user, name=self.name)
 
         url = reverse("etherscan_app:save-address-to-folder")
         self.client.force_login(self.user)
@@ -225,30 +225,30 @@ class FolderRelatedTests(TestCase):
         url = reverse("etherscan_app:create-folder")
 
         self.client.force_login(self.user)
-        self.client.post(url, {"folder": self.folder_name})
+        self.client.post(url, {"folder": self.name})
 
-        self.assertEqual(self.folder_name, Folder.objects.last().folder_name)
+        self.assertEqual(self.name, Folder.objects.last().name)
 
     def test_create_folder_with_saved_address(self):
         url = reverse("etherscan_app:create-folder")
         self.client.force_login(self.user)
-        self.client.post(url, {"folder": self.folder_name, "address": self.address})
+        self.client.post(url, {"folder": self.name, "address": self.address})
         self.assertEqual(Folder.objects.last().addresses.get().address, self.address)
 
     def test_show_folders(self):
         for folder in self.folders:
-            Folder.objects.create(user=self.user, folder_name=folder)
+            Folder.objects.create(user=self.user, name=folder)
 
         url = reverse("etherscan_app:show-folders")
         self.client.force_login(self.user)
         res = self.client.get(url)
-        context_lists = [x.folder_name for x in res.context.get("folders")]
+        context_lists = [x.name for x in res.context.get("folders")]
         self.assertEqual(
-            context_lists, [x.folder_name for x in self.user.folders.all()]
+            context_lists, [x.name for x in self.user.folders.all()]
         )
 
     def test_show_folder(self):
-        folder = Folder.objects.create(user=self.user, folder_name=self.folder_name)
+        folder = Folder.objects.create(user=self.user, name=self.name)
         self.address_instance.folders.add(folder)
 
         url = reverse("etherscan_app:show-folder", kwargs={"folder_id": folder.pk})
@@ -263,19 +263,19 @@ class FolderRelatedTests(TestCase):
             ),
         )
 
-    def test_edit_folder_name(self):
-        folder = Folder.objects.create(user=self.user, folder_name=self.folder_name)
+    def test_edit_name(self):
+        folder = Folder.objects.create(user=self.user, name=self.name)
         url = reverse("etherscan_app:edit-folder-name", kwargs={"folder_id": folder.pk})
         new_name = "new_name"
 
         self.client.force_login(self.user)
-        self.client.post(url, {"folder_name": new_name})
+        self.client.post(url, {"name": new_name})
 
-        self.assertEqual(Folder.objects.get(pk=folder.pk).folder_name, new_name)
+        self.assertEqual(Folder.objects.get(pk=folder.pk).name, new_name)
 
     def test_delete_list(self):
         for folder in self.folders:
-            Folder.objects.create(user=self.user, folder_name=folder)
+            Folder.objects.create(user=self.user, name=folder)
 
         url = reverse("etherscan_app:delete-folder", kwargs={"folder_id": 1})
 

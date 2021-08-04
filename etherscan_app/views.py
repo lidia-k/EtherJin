@@ -163,7 +163,7 @@ def create_folder(request):
     else:
         user = request.user
         folder_name = request.POST.get("folder")
-        folder = Folder.objects.create(user=user, folder_name=folder_name)
+        folder = Folder.objects.create(user=user, name=folder_name)
         address = request.POST.get("address")
         if address:
             address = Address.objects.get(users=user, address=address)
@@ -192,7 +192,7 @@ def edit_folder_name(request, folder_id):
         )
     else:
         new_name = request.POST.get("folder_name")
-        folder.folder_name = new_name
+        folder.name = new_name
         folder.save()
         return redirect(
             reverse("etherscan_app:show-folder", kwargs={"folder_id": folder_id})
