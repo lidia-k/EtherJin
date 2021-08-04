@@ -16,6 +16,7 @@ docker-compose up -d --build
 docker-compose exec django python makemigrations
 docker-compose exec django python migrate
 docker-compose exec django python manage.py runserver 0.0.0.0:8000
+docker-compose exec django python manage.py create_index
 ```
 ## Features
 * Login with Linkedin
