@@ -21,6 +21,12 @@ def create_transactions(sender, instance, created, using, update_fields, **kwarg
     )
 
 
+@receiver([post_save], sender=Address)
+def address_saved(sender, instance, created, using, update_fields, **kwargs):
+    logger.info(f"{instance.address} is being added to the index")
+    async_task("etherscan_app.indexes.update_address_document", instance.pk)
+
+
 @receiver([post_save], sender=Folder)
 def folder_saved(sender, instance, created, using, update_fields, **kwargs):
     logger.info(f"Folder {instance} is being added to the index")
