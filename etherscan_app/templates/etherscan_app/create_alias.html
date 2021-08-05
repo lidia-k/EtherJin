@@ -1,0 +1,14 @@
+{% extends 'etherscan_app/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block heading %}
+Create an alias for {{ address }}
+{% endblock %}
+
+{% block content%}
+<form action="{% url 'etherscan_app:save-alias' %}" method="post">
+    {% crispy alias_creation_form %}
+</form>
+
+<br><a href="{% url 'etherscan_app:index' %}">Go back to the main page.</a>
+{% endblock %}
