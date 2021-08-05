@@ -70,7 +70,7 @@ def submit_address(request, address):
 @login_required(login_url="/login")
 def show_transactions(request, address):
     """
-    Show transactions of the searched address 
+    Show the transactions of an address, its alias and saved folders
     """
     user = request.user
     alias_name = AddressUserRelationship.objects.filter(user=user, address=address).first().alias
