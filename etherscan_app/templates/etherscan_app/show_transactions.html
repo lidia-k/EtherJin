@@ -15,14 +15,13 @@ Transactions of {{ address }}
   {% endif %}
   <br><br>
   {% if folders %}
-    <p>Folder:
+    Folder:
     {% for folder in folders %}
       <a href="{% url 'etherscan_app:show-folder' folder.pk %}">{{ folder.name }}</a>
     {% endfor %}
-    </p>
-    <button>Save it to another folder</button>
+    <input type="submit"  value="Save it to another folder" formaction="{% url 'etherscan_app:create-or-select-folder' address %}">
   {% else %}
-    <button>Save it to a folder</button>
+    <input type="submit" value="Save it to a folder" formaction="{% url 'etherscan_app:create-or-select-folder' address %}">
   {% endif %}
   </form>
     <br><br>
