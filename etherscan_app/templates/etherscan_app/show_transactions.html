@@ -5,19 +5,40 @@ Transactions of {{ address }}
 {% endblock %}
 
 {% block content%}
+  <form>
+  {% csrf_token %}
+  {% if alias %}
+    Alias: {{ alias }}
+    <input type="submit" value="Change alias">
+  {% else %}
+    <input formaction="{% url 'etherscan_app:create-alias' address %}" formmethod="post" type="submit" value="Create alias">
+  {% endif %}
+  <br><br>
+  {% if folders %}
+    <p>Folder:
+    {% for folder in folders %}
+      <a href="{% url 'etherscan_app:show-folder' folder.pk %}">{{ folder.name }}</a>
+    {% endfor %}
+    </p>
+    <button>Save it to another folder</button>
+  {% else %}
+    <button>Save it to a folder</button>
+  {% endif %}
+  </form>
+    <br><br>
     <table style="width:100%">
+    <tr>
+      <th>From</th>
+      <th>To</th> 
+      <th>Value in ether</th>
+    </tr>
+    {% for x in transactions %}
         <tr>
-          <th>From</th>
-          <th>To</th> 
-          <th>Value in ether</th>
+        <td>{{ x.from_account }}</td>
+        <td>{{ x.to_account }}</td>
+        <td>{{ x.value_in_ether }}</td>
         </tr>
-        {% for x in transactions %}
-            <tr>
-            <td>{{ x.from_account }}</td>
-            <td>{{ x.to_account }}</td>
-            <td>{{ x.value_in_ether }}</td>
-            </tr>
-        {% endfor %}
-      </table>  
+    {% endfor %}
+  </table>  
 {% endblock %}
 
