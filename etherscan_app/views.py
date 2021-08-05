@@ -18,8 +18,9 @@ def index(request):
 def search_results(request):
     """
     Takes in a search query 
-    If the search query is an address, redirect to show its transactions
-    If the search query is a folder, returns the search results of the matching folders 
+    If the search query is an address that hasn't been searched by an user, validate and save the address first.
+    If the search query is an already saved address, redirect to show the transactions.
+    If the search query is a folder, returns a list of the matching folders.
     """
     if request.method == "POST":
         search_query = request.POST.get("search-query")
@@ -38,6 +39,11 @@ def search_results(request):
 
 @login_required(login_url="/login")
 def submit_address(request, address):
+    """
+    Takes in a new address that hasn't been search by a user
+    Validates the address
+    If the address is valid, saves the address to a user and redirects it to show the transactions
+    """
     valid_address, response_data = get_address_response(address)
     if not valid_address and not response_data:
         # no api token
@@ -53,7 +59,6 @@ def submit_address(request, address):
             user=user, address=address_instance
         )
         return redirect(reverse('etherscan_app:show-transactions', kwargs={'address': address_instance.pk}))
-        #return redirect(reverse("etherscan_app:results", kwargs={"address": pk}))
     elif result_data == "Error! Invalid address format":
         return HttpResponse(f"{result_data}", status=400)
     print(
@@ -63,14 +68,34 @@ def submit_address(request, address):
 
 
 @login_required(login_url="/login")
-def show_results(request, address):
+def show_transactions(request, address):
+    """
+    Show transactions of the searched address 
+    """
+    user = request.user
+    alias_name = AddressUserRelationship.objects.filter(user=user, address=address).first().alias
+    address_instance = Address.objects.get(address=address, users=user)
+    transactions = address_instance.transactions.all()
+    folders = address_instance.folders.all()
+
+    context = {
+        "address": address,
+        "alias": alias_name,
+        "folders": folders,
+        "transactions": transactions, 
+    }
+    return render(request, "etherscan_app/show_transactions.html", context=context)
+
+
+@login_required(login_url="/login")
+def create_alias(request, address):
     address = Address.objects.get(address=address)
     alias_creation_form = AliasCreationForm(address=address.address)
     context = {
         "address": address.pk,
         "alias_creation_form": alias_creation_form,
     }
-    return render(request, "etherscan_app/results.html", context=context)
+    return render(request, "etherscan_app/create_alias.html", context=context)
 
 
 @login_required(login_url="/login")
@@ -83,9 +108,8 @@ def save_address_alias(request):
     address_user_instance.alias = alias_name
     address_user_instance.save()
 
-    address = alias_name
     return redirect(
-        reverse("etherscan_app:create-or-select-folder", kwargs={"address": address})
+        reverse("etherscan_app:show-transactions", kwargs={"address": address})
     )
 
 
@@ -140,22 +164,6 @@ def show_folder(request, folder_id):
         {"folder": folder, "address_user_instances": address_user_instances},
     )
 
-
-@login_required(login_url="/login")
-def show_transactions(request, address):
-    user = request.user
-    if AddressUserRelationship.objects.filter(user=user, alias=address).exists():
-        address_instance = AddressUserRelationship.objects.get(
-            user=request.user, alias=address
-        ).address
-    else:
-        address_instance = Address.objects.get(users=user, pk=address)
-    transactions = address_instance.transactions.all()
-    return render(
-        request,
-        "etherscan_app/show_transactions.html",
-        {"address": address, "transactions": transactions},
-    )
 
 
 @login_required(login_url="/login")
