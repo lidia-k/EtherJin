@@ -1,0 +1,19 @@
+{% extends 'etherscan_app/base.html' %}
+
+{% block heading %}
+  {{ user.get_full_name }}, the addresses you've searched so far..
+{% endblock %}
+
+{% block content %}
+  {% if addresses %}
+    <ul>
+      {% for address in addresses %}
+        <li>
+            <a href="{% url 'etherscan_app:show-transactions' address %}">{{ address }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You haven't searched for any address yet..</p>
+  {% endif %}
+{% endblock %}
