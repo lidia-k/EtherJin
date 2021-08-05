@@ -16,21 +16,28 @@ def index(request):
 
 @login_required(login_url="/login")
 def search_results(request):
+    """
+    Takes in a search query 
+    If the search query is an address, redirect to show its transactions
+    If the search query is a folder, returns the search results of the matching folders 
+    """
     if request.method == "POST":
         search_query = request.POST.get("search-query")
+        if search_query.startswith('0x'):
+            user = request.user
+            address = AddressUserRelationship.objects.filter(address=search_query, user=user).first()
+            if address:
+                return redirect(reverse('etherscan_app:show-transactions', kwargs={'address': address.address.address } ))
+            return redirect(reverse('etherscan_app:submit-address', kwargs={'address': search_query}))
+            
         folders = Folder.objects.search(search_query)
         if folders: 
             return render(request, "etherscan_app/folder_search_results.html", {"folders": folders})
-        elif None:
-            #search AddressDocument to show the address results
-            pass 
-        return HttpResponse("No results are found..")
+        return HttpResponse("No search results..", status=500)
 
 
 @login_required(login_url="/login")
-def submit_address(request):
-    # TODO make it faster to show the results
-    address = request.POST.get("address")
+def submit_address(request, address):
     valid_address, response_data = get_address_response(address)
     if not valid_address and not response_data:
         # no api token
@@ -45,8 +52,8 @@ def submit_address(request):
         AddressUserRelationship.objects.get_or_create(
             user=user, address=address_instance
         )
-        pk = address_instance.pk
-        return redirect(reverse("etherscan_app:results", kwargs={"address": pk}))
+        return redirect(reverse('etherscan_app:show-transactions', kwargs={'address': address_instance.pk}))
+        #return redirect(reverse("etherscan_app:results", kwargs={"address": pk}))
     elif result_data == "Error! Invalid address format":
         return HttpResponse(f"{result_data}", status=400)
     print(
