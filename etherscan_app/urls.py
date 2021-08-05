@@ -7,7 +7,7 @@ app_name = "etherscan_app"
 urlpatterns = [
     path("", views.index, name="index"),
     path("search-results", views.search_results, name="search-results"),
-    path("submit-address", views.submit_address, name="submit-address"),
+    path("submit-address/<str:address>", views.submit_address, name="submit-address"),
     path("results/<str:address>", views.show_results, name="results"),
     path(
         "save-address-to-folder",
