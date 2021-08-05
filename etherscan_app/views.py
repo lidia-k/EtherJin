@@ -114,6 +114,17 @@ def save_address_alias(request):
 
 
 @login_required(login_url="/login")
+def edit_alias(request, address):
+    address = Address.objects.get(address=address)
+    alias_creation_form = AliasCreationForm(address=address.address)
+    context = {
+        "address": address.pk,
+        "alias_creation_form": alias_creation_form,
+    }
+    return render(request, "etherscan_app/edit_alias.html", context=context)
+
+
+@login_required(login_url="/login")
 def create_or_select_folder(request, address):
     user = request.user
     if AddressUserRelationship.objects.filter(user=user, alias=address).exists():

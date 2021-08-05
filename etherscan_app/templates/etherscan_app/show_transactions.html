@@ -9,7 +9,7 @@ Transactions of {{ address }}
   {% csrf_token %}
   {% if alias %}
     Alias: {{ alias }}
-    <input type="submit" value="Change alias">
+    <input formaction="{% url 'etherscan_app:edit-alias' address %}" type="submit" value="Change alias">
   {% else %}
     <input formaction="{% url 'etherscan_app:create-alias' address %}" formmethod="post" type="submit" value="Create alias">
   {% endif %}

@@ -9,6 +9,7 @@ urlpatterns = [
     path("search-results", views.search_results, name="search-results"),
     path("submit-address/<str:address>", views.submit_address, name="submit-address"),
     path("create-alias/<str:address>", views.create_alias, name="create-alias"),
+    path("edit-alias/<str:address>", views.edit_alias, name="edit-alias"),
     path(
         "save-address-to-folder",
         views.save_address_to_folder,
