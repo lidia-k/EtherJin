@@ -1,9 +1,9 @@
 {% extends 'etherscan_app/base.html' %}
 {% block content %}
 <h1>Welcome to EtherJin, {{ user.get_full_name }}!</h1>
-<a href="{% url 'etherscan_app:search-results' %}">Search for an address/contract</a><br>
 <a href="{% url 'etherscan_app:create-folder' %}">Create a folder</a><br>
-<a href="{% url 'etherscan_app:show-folders' %}">View folders</a>
+<a href="{% url 'etherscan_app:show-folders' %}">View folders</a><br>
+<a href="{% url 'etherscan_app:searched-addresses' %}">View the searched addresses</a>
 <br><br>
 <a href="{% url 'logout' %}">Logout</a>
 {% endblock %}
