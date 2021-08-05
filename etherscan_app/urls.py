@@ -29,4 +29,5 @@ urlpatterns = [
     path("view-folders", views.show_folders, name="show-folders"),
     path("<str:folder_id>/edit", views.edit_folder_name, name="edit-folder-name"),
     path("<str:folder_id>/delete", views.delete_folder, name="delete-folder"),
+    path("searched-addresses", views.show_searched_addresses, name="searched-addresses"),
 ]

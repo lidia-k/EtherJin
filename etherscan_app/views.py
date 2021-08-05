@@ -230,3 +230,12 @@ def delete_folder(request, folder_id):
     folder = Folder.objects.get(user=request.user, pk=folder_id)
     folder.delete()
     return redirect(reverse("etherscan_app:show-folders"))
+
+
+@login_required(login_url="/login")
+def show_searched_addresses(request):
+    user = request.user
+    address_user_instances = AddressUserRelationship.objects.filter(user=user).all()
+    addresses = [obj.address.address for obj in address_user_instances]
+
+    return render(request, "etherscan_app/searched_addresses.html", {"addresses": addresses})
