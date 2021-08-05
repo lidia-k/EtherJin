@@ -2,7 +2,7 @@
 
 {% block content%}
 
-<p>Save the address to an existing folder or create a new folder below.</p>
+<p>Save {{ address }} to an existing folder or create a new folder</p>
 <form action="{% url 'etherscan_app:save-address-to-folder' %}" method="post">
     {% csrf_token %}
     {{ folder_selection_form }}
