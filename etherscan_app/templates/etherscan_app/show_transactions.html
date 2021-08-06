@@ -35,7 +35,7 @@
         <tr>
         <td>{{ x.from_account }}</td>
         <td>{{ x.to_account }}</td>
-        <td>{{ x.value_in_ether }}</td>
+        <td>{{ x.value_in_ether|floatformat:6 }}</td>
         </tr>
     {% endfor %}
   </table>  
