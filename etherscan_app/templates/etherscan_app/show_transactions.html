@@ -8,21 +8,21 @@
   <form>
   {% csrf_token %}
   {% if alias %}
-    Alias: {{ alias }}
-    <input formaction="{% url 'etherscan_app:edit-alias' address %}" type="submit" value="Change alias">
+    Alias: {{ alias }}<br>
+    <input formaction="{% url 'etherscan_app:edit-alias' address %}" type="submit" value="Change alias" class="btn btn-primary btn-primary">
   {% else %}
-    <input formaction="{% url 'etherscan_app:create-alias' address %}" formmethod="post" type="submit" value="Create alias">
+    <input formaction="{% url 'etherscan_app:create-alias' address %}" formmethod="post" type="submit" value="Create alias" class="btn btn-primary btn-primary">
   {% endif %}
 
   <br><br>
   {% if folders %}
-    Folder:
+    Folders:
     {% for folder in folders %}
       <a href="{% url 'etherscan_app:show-folder' folder.pk %}">{{ folder.name }}</a>
     {% endfor %}
-    <input type="submit"  value="Save it to another folder" formaction="{% url 'etherscan_app:create-or-select-folder' address %}">
+    <br><input type="submit"  value="Save it to another folder" formaction="{% url 'etherscan_app:create-or-select-folder' address %}" class="btn btn-primary btn-primary">
   {% else %}
-    <input type="submit" value="Save it to a folder" formaction="{% url 'etherscan_app:create-or-select-folder' address %}">
+    <input type="submit" value="Save it to a folder" formaction="{% url 'etherscan_app:create-or-select-folder' address %}" class="btn btn-primary btn-primary">
   {% endif %}
   </form>
 
