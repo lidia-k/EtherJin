@@ -16,6 +16,7 @@ class FolderQuerySet(models.QuerySet):
 class Folder(models.Model):
     user = models.ForeignKey(User, related_name="folders", on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
+    public = models.BooleanField(default=True)
 
     objects = FolderQuerySet.as_manager()
 
