@@ -6,15 +6,19 @@ from crispy_forms.layout import Submit
 
 class FolderSelectionForm(forms.Form):
     folder = forms.ChoiceField(choices=())
+    address = forms.CharField(max_length=60, widget=forms.HiddenInput())
 
-    def __init__(self, folders, *args, **kwargs):
-        super(FolderSelectionForm, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(FolderSelectionForm, self).__init__(*args)
         folder_choices = []
+        folders = kwargs.get("folders")
         for folder in folders:
             folder_choice = (folder.id, folder.name)
             folder_choices.append(folder_choice)
         self.fields["folder"].choices = folder_choices
         self.fields["folder"].widget.attrs.update(style="max-width: 25%")
+        self.fields["address"].initial = kwargs.get("address")
+        
         self.helper = FormHelper()
         self.helper.add_input(Submit("save", "Save", css_class="btn-primary"))
         self.helper.form_method = "POST"
@@ -22,13 +26,14 @@ class FolderSelectionForm(forms.Form):
 
 class FolderCreationFrom(forms.Form):
     folder = forms.CharField(label="Folder name", max_length=50)
+    address = forms.CharField(max_length=60, widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         submit_text = kwargs.get("submit_text", "Create")
-        kwargs = {}
-        super(FolderCreationFrom, self).__init__(*args, **kwargs)
+        super(FolderCreationFrom, self).__init__(*args)
         self.fields["folder"].widget.attrs.update(style="max-width: 25%")
-
+        self.fields["address"].initial = kwargs.get("address")
+        
         self.helper = FormHelper()
         self.helper.add_input(Submit("create", submit_text, css_class="btn-primary"))
         self.helper.form_method = "POST"

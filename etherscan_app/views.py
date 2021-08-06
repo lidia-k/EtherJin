@@ -132,8 +132,8 @@ def create_or_select_folder(request, address):
             user=user, alias=address
         ).address.pk
 
-    folder_selection_form = FolderSelectionForm(request.user.folders.all())
-    folder_creation_form = FolderCreationFrom(submit_text="Create and Save")
+    folder_selection_form = FolderSelectionForm(folders=request.user.folders.all(), address=address)
+    folder_creation_form = FolderCreationFrom(submit_text="Create and Save", address=address)
     context = {
         "address": address,
         "folder_selection_form": folder_selection_form,
