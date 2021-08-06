@@ -9,7 +9,7 @@ class FolderQuerySet(models.QuerySet):
         search_query = f'*{search_query}*'
         res = FolderDocument.search().query('wildcard', name=search_query).execute()
         folder_ids = [hit.id for hit in res.hits]
-        folders = self.filter(id__in=folder_ids)
+        folders = self.filter(id__in=folder_ids, public=True)
         return folders
 
 
