@@ -189,7 +189,8 @@ def create_folder(request):
     else:
         user = request.user
         folder_name = request.POST.get("folder")
-        folder = Folder.objects.create(user=user, name=folder_name)
+        public = request.POST.get("public")
+        folder = Folder.objects.create(user=user, name=folder_name, public=public)
         address = request.POST.get("address")
         if address:
             address = Address.objects.get(users=user, address=address)
