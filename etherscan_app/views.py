@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 from etherscan_app.forms import (AliasCreationForm, FolderCreationFrom,
                                  FolderRenameForm, FolderSelectionForm)
@@ -78,11 +79,16 @@ def show_transactions(request, address):
     transactions = address_instance.transactions.all()
     folders = address_instance.folders.all()
 
+    paginator = Paginator(transactions, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
         "address": address,
         "alias": alias_name,
         "folders": folders,
         "transactions": transactions, 
+        "page_obj": page_obj,
     }
     return render(request, "etherscan_app/show_transactions.html", context=context)
 
