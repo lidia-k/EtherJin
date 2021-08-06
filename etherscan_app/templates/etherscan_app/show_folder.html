@@ -12,9 +12,9 @@
 {% block content %}
 <form>
     {% csrf_token %}
-    <input type="submit" formaction="{% url 'etherscan_app:change-folder-privacy' folder.pk %}" formmethod="post" value="Change to {{ privacy }}">
-    <input type='submit' formaction="{% url 'etherscan_app:edit-folder-name' folder.pk %}" formmethod="get" value="Edit">
-    <input type='submit' formaction="{% url 'etherscan_app:delete-folder' folder.pk %}" formmethod="post" value="Delete" onclick="myFunction()">
+    <input class="btn btn-primary btn-primary" type="submit" formaction="{% url 'etherscan_app:change-folder-privacy' folder.pk %}" formmethod="post" value="Change to {{ privacy }}">
+    <input class="btn btn-primary btn-primary" type='submit' formaction="{% url 'etherscan_app:edit-folder-name' folder.pk %}" formmethod="get" value="Edit">
+    <input class="btn btn-primary btn-primary" type='submit' formaction="{% url 'etherscan_app:delete-folder' folder.pk %}" formmethod="post" value="Delete" onclick="myFunction()">
 </form><br>
 {% if address_user_instances %}
     <ul>
