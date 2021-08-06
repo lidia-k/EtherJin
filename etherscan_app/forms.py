@@ -1,7 +1,7 @@
 from django import forms
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Layout, Submit, Row, Column
 
 
 class FolderSelectionForm(forms.Form):
@@ -32,15 +32,18 @@ class FolderCreationFrom(forms.Form):
     def __init__(self, *args, **kwargs):
         submit_text = kwargs.get("submit_text", "Create")
         super(FolderCreationFrom, self).__init__(*args)
-        self.fields["folder"].widget.attrs.update(style="max-width: 25%")
-        
         self.fields["address"].initial = kwargs.get("address")
-
         public_choices = [("True", "Public"), ("False", "Private")]
         self.fields["public"].choices = public_choices
-        self.fields["public"].widget.attrs.update(style="max-width: 10%")
+        self.fields["public"].widget.attrs.update(style="max-width: 50%")
         
         self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('folder'),
+                Column('public')
+            )
+        )
         self.helper.add_input(Submit("create", submit_text, css_class="btn-primary"))
         self.helper.form_method = "POST"
 
