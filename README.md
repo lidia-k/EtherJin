@@ -7,6 +7,7 @@ This project is created with:
 * Django 3.2
 * Django-q 1.3.9
 * Redis 3.5.3
+* Elasticsearch 7.14
 
 ## Setup
 To run this project for development, create an .env file as in the .env.template file in this repo and use the following command: 
