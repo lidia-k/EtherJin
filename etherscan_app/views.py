@@ -160,20 +160,23 @@ def save_address_to_folder(request):
 @login_required(login_url="/login")
 def show_folder(request, folder_id):
     folder = Folder.objects.get(user=request.user, pk=folder_id)
+    folder_privacy = "public"
+    if folder.public:
+        folder_privacy = "private"
+    
     addresses = folder.addresses.all()
-
     address_user_instances = []
     for address in addresses:
         address_user_instance = AddressUserRelationship.objects.get(
             user=request.user, address=address
         )
         address_user_instances.append(address_user_instance)
-
-    return render(
-        request,
-        "etherscan_app/show_folder.html",
-        {"folder": folder, "address_user_instances": address_user_instances},
-    )
+    
+    context = {
+        "folder": folder, 
+        "privacy": folder_privacy,
+        "address_user_instances": address_user_instances}
+    return render(request, "etherscan_app/show_folder.html", context=context)
 
 
 
@@ -205,6 +208,17 @@ def show_folders(request):
     user = request.user
     folders = user.folders.all()
     return render(request, "etherscan_app/show_folders.html", {"folders": folders})
+
+
+@login_required(login_url="/login")
+def change_folder_privacy(request, folder_id):
+    folder = Folder.objects.get(pk=folder_id)
+    if folder.public:
+        folder.public = False
+    else: 
+        folder.public = True
+    folder.save()
+    return redirect(reverse('etherscan_app:show-folder', kwargs={"folder_id": folder_id}))
 
 
 @login_required(login_url="/login")

@@ -27,6 +27,7 @@ urlpatterns = [
     ),
     path("create-folder", views.create_folder, name="create-folder"),
     path("view-folders", views.show_folders, name="show-folders"),
+    path("<str:folder_id>/privacy", views.change_folder_privacy, name="change-folder-privacy"),
     path("<str:folder_id>/edit", views.edit_folder_name, name="edit-folder-name"),
     path("<str:folder_id>/delete", views.delete_folder, name="delete-folder"),
     path("searched-addresses", views.show_searched_addresses, name="searched-addresses"),
