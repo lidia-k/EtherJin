@@ -1,8 +1,14 @@
 {% extends 'etherscan_app/base.html' %}
 
 {% block heading %}
-{{ folder.name }}
+    {{ folder.name }}
+    {% if folder.public %}
+        (public)
+    {% else %}
+        (private)
+    {% endif %}
 {% endblock %}
+
 {% block content %}
 
 {% if address_user_instances %}
